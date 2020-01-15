@@ -1,2 +1,2 @@
 # helloworld
-a test! hello world from Kai, re-learning Java and Python
+a test! hello world from Kai, files for self-reference
