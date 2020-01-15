@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-balance
+  labels:
+    app1: nginx
+    app2: filecontainer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app1: nginx
+      app2: filecontainer
+  template:
+    metadata:
+      labels:
+        app1: nginx
+        app2: filecontainer
+    spec:
+      volumes:
+      - name: html
+        emptyDir: {}
+      containers:
+      - name: webcontainer
+        image: nginx:latest
+        volumeMounts:
+        - name: html
+          mountPath:  /usr/share/nginx/html
+        ports:
+        - containerPort: 80
+      - name: filecontainer
+        image: debian
+        volumeMounts:
+        - name: html
+          mountPath: /html
+        command: ["/bin/sh", "-c"]
+        args:
+          - while true; do 
+             date >> /html/index.html;
+             hostname >> /html/index.html;
+             sleep 300;
+            done
+
+

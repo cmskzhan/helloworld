@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ds-hello-world
+  labels:
+    daemon: hw-nginx
+spec:
+  selector:
+    matchLabels:
+      daemon: ds-nginx
+  template:
+    metadata:
+      labels:
+        daemon: ds-nginx
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: nginx
+        image: darealmc/nginx-k8s:v1
+        ports:
+        - containerPort: 80
+
