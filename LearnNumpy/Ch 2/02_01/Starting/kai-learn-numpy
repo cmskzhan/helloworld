@@ -1,0 +1,171 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 2",
+      "language": "python",
+      "name": "python2"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 2
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython2",
+      "version": "2.7.11"
+    },
+    "colab": {
+      "name": "Creating Arrays from Python Structures-checkpoint.ipynb",
+      "provenance": []
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "P18y1y_syZv_",
+        "colab_type": "text"
+      },
+      "source": [
+        "<h1>Create NumPy arrays using Python's \"array like\" data types</h1>\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "0ldeJOzOyeHX",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "6339ac14-a31c-4da1-c8a1-6ba7eea72797"
+      },
+      "source": [
+        "import numpy as np \n",
+        "print(np.__version__)"
+      ],
+      "execution_count": 7,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "1.16.4\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "TqsoqXBTyp1o",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "8d12d826-6dbb-426b-f71b-190edb3cd04b"
+      },
+      "source": [
+        "my_list = [-17, 0, 4, 5, 9]\n",
+        "np_array=np.array(my_list)\n",
+        "print(np_array) "
+      ],
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "[-17   0   4   5   9]\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "byFpvbATyzUE",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "8889cc9b-dd57-4776-c873-6615c1f5db14"
+      },
+      "source": [
+        "np_array_10x=np_array*10\n",
+        "print(np_array_10x)"
+      ],
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "[-170    0   40   50   90]\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "HRVsjBCi0_Sn",
+        "colab_type": "text"
+      },
+      "source": [
+        "##complex and tuple"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "byvClJ4jzd_L",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 50
+        },
+        "outputId": "ace31d77-6ff8-49a7-f301-82574cbebb59"
+      },
+      "source": [
+        "tupleToNumpy=(14, -3.14, 4+3j); tupleToNumpy2=(-14, 3.21) #int, float, complex, np array keeps elements of array uniform\n",
+        "numpyFromTuple=np.array(tupleToNumpy)\n",
+        "numpyFromTuple2=np.array(tupleToNumpy2)\n",
+        "print(numpyFromTuple)\n",
+        "print(numpyFromTuple2)\n"
+      ],
+      "execution_count": 15,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "[14.  +0.j -3.14+0.j  4.  +3.j]\n",
+            "[-14.     3.21]\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "0D-y3wJ20KBA",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": 0,
+      "outputs": []
+    }
+  ]
+}
