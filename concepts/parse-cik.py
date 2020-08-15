@@ -56,7 +56,7 @@ for i in companyName:
         potential_result=[]
         for company, cik in sec_cik_dictionary.items(): 
             potential_result.append([company, cik, fuzz.partial_ratio(CompanyName, company)])
-            potential_result1= sorted(potential_result, key=lambda x: -x[2])
-        print(potential_result1[0:2])
+            # potential_result1= sorted(potential_result, key=lambda x: -x[2])
+        print(potential_result[0:2])
     
 print(cik)

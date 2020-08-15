@@ -1,4 +1,4 @@
-# 
+# Caveat: this script pulls outstanding shares from SEC 10-Q report. Any Corp event after latest filing date is not accounted
 # 0. find company name
 
 # 1. get cik number
@@ -10,7 +10,7 @@
 # 3. parse value from 
 # https://www.sec.gov/cgi-bin/viewer?action=view&cik=789019&accession_number=0001564590-20-019706&xbrl_type=v
 
-import csv
+
 import requests
 from fuzzywuzzy import process, fuzz
 
@@ -30,7 +30,6 @@ for i in reversed(all_companies_array):
 all_companies_arra = [i[:-1] for i in all_companies_array] #remove trailing :
 all_companies_cik_dict=dict(item.split(":") for item in all_companies_arra)
 
-# 0. find company name
 companyName=["microsoft corp", "oracle corp", "bbb"]
 
 # 1. get cik number
@@ -49,3 +48,12 @@ for i in companyName:
         # print(potential_result1[1])
     
 print(cik)
+
+# 2. get accession-number number
+for i in cik:
+    url = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + i + '&type=10-Q&count=1&output=atom'
+    xmlresult=requests.get(url, verify=False)
+    for line in xmlresult.text.splitlines():
+        if re.search('<summary', line):
+            print(line)
+
