@@ -13,6 +13,9 @@
 
 import requests
 from fuzzywuzzy import process, fuzz
+import re
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 all_companies_page = requests.get("https://www.sec.gov/Archives/edgar/cik-lookup-data.txt", verify=False)
 all_companies_content = all_companies_page.content.decode("latin1")
@@ -53,7 +56,9 @@ print(cik)
 for i in cik:
     url = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + i + '&type=10-Q&count=1&output=atom'
     xmlresult=requests.get(url, verify=False)
+    an = []
     for line in xmlresult.text.splitlines():
         if re.search('<summary', line):
-            print(line)
-
+            for word in line.split():
+                an.append(word)
+    print(an[5])
