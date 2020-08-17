@@ -14,6 +14,7 @@
 import requests
 from fuzzywuzzy import process, fuzz
 import re
+from bs4 import BeautifulSoup
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -53,12 +54,43 @@ for i in companyName:
 print(cik)
 
 # 2. get accession-number number
-for i in cik:
-    url = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + i + '&type=10-Q&count=1&output=atom'
-    xmlresult=requests.get(url, verify=False)
-    an = []
-    for line in xmlresult.text.splitlines():
+def accession_no(cikno):
+    url10k = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + cikno + '&type=10-K&count=1&output=atom'
+    url10q = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + cikno + '&type=10-Q&count=1&output=atom'
+    xml10k=requests.get(url10k, verify=False)
+    xml10q=requests.get(url10q, verify=False)
+    an10k = []
+    an10q = []
+    for line in xml10k.text.splitlines():
         if re.search('<summary', line):
             for word in line.split():
-                an.append(word)
-    print(an[5])
+                an10k.append(word)
+    for line in xml10q.text.splitlines():
+        if re.search('<summary', line):
+            for word in line.split():
+                an10q.append(word)
+    if an10k[3] > an10q[3]:
+        # print(an10k[5],"has date:", an10k[3], "later than", an10q[5],"has date:", an10q[3])
+        return an10k[5]
+    else: 
+        # print(an10q[5],"has date:", an10q[3], "later than", an10k[5],"has date:", an10k[3])
+        return an10q[5]
+    
+acno=[]
+for i in cik:
+    acno.append(accession_no(i).replace('-',''))
+print(acno)
+
+
+# 3. parse value from 
+# https://www.sec.gov/cgi-bin/viewer?action=view&cik=789019&accession_number=0001564590-20-019706&xbrl_type=v
+# actually should be 
+# https://www.sec.gov/Archives/edgar/data/789019/000156459020019706/R1.htm
+
+for i in range(len(cik)):
+    url = 'https://www.sec.gov/Archives/edgar/data/' + cik[i] + '/' + acno[i] + '/R1.htm'
+    html = requests.get(url, verify=False)
+    soup = BeautifulSoup(html.content, 'lxml')
+    td = str(soup.find('td', {'class':"nump"}))
+    outstanding_shares = int(''.join(filter(str.isdigit, td))) # extract digits out of string
+    print(outstanding_shares)
