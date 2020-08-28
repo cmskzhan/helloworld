@@ -12,7 +12,7 @@
 
 
 import requests
-from fuzzywuzzy import process, fuzz
+# from fuzzywuzzy import process, fuzz
 import re
 from bs4 import BeautifulSoup
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -34,7 +34,7 @@ for i in reversed(all_companies_array):
 all_companies_arra = [i[:-1] for i in all_companies_array] #remove trailing :
 all_companies_cik_dict=dict(item.split(":") for item in all_companies_arra)
 
-companyName=["microsoft corp", "oracle corp", "bbb"]
+companyName=['microsoft corp', 'oracle corp', 'NASDAQ OMX GROUP, INC.']
 
 # 1. get cik number
 cik=[]

@@ -22,7 +22,9 @@ def main():
 
     print(slideCount, "slide elements in there now")
     print(itemCount, "item element in total")
-    print(doc.findall(".//item"))
+    # print(doc.findall(".//item"))
+    for i in doc.findall(".//item"):
+        print(i.text, i.values, i.xpath)
 
 if __name__=="__main__":
     main()

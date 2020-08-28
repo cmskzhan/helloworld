@@ -9,7 +9,7 @@ def main():
 
 def get_xml():
     url="http://httpbin.org/xml"
-    result =  requests.get(url)
+    result =  requests.get(url) #use requests.get(url, auth=("user","passs")) for basic auth
     print("return code =", result.status_code)
     print("header=",result.headers)
     print(result.content) #result.text for ascii output
