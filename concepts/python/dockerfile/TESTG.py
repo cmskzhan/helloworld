@@ -1,9 +1,14 @@
 from collections import Counter
+import requests
 
 def main():
-    filename="/home/sroot/kaizha/github/helloworld/concepts/sec-cik-lookup-data.txt"
-    with open (filename, "r", encoding="latin1") as myfile:
-        lines=myfile.read().split("\n")
+    all_companies_page = requests.get("https://www.sec.gov/Archives/edgar/cik-lookup-data.txt", verify=False)
+    all_companies_content = all_companies_page.content.decode("latin1")
+    lines = all_companies_content.split("\n")
+
+    # filename="/home/sroot/kaizha/github/helloworld/concepts/sec-cik-lookup-data.txt"
+    # with open (filename, "r", encoding="latin1") as myfile:
+    #     lines=myfile.read().split("\n")
     
 
     cleaned = [cleanlist for cleanlist in lines if cleanlist.count(":") == 2] #remove list that can't be converted to dictionary
