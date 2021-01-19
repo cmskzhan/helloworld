@@ -1,10 +1,10 @@
 FROM python:3
 
-WORKDIR /home/kaizhang/f/helloworld/concepts/python
+WORKDIR /usr/src/app
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-
-CMD [ "python", "./TESTG.py" ]
+EXPOSE 8051/tcp
+ENTRYPOINT [ "/usr/local/bin/streamlit", "run", "streamlit_helloworld.py" ]

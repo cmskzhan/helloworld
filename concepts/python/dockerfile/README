@@ -1,0 +1,2 @@
+docker build -t streamlit:helloworld3 .
+docker run -d -p 8080:8501 streamlit:helloworld3
