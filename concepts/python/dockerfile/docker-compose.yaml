@@ -11,5 +11,4 @@ services:
 
   streamlit:
     restart: always
-    image: streamlit:helloworld3
-
+    image: streamlit:helloworld5
