@@ -12,5 +12,4 @@ services:
   streamlit:
     restart: always
     image: streamlit:helloworld3
-    # ports:
-    # - "8080:8501"
+
