@@ -1,13 +1,13 @@
   
-from logging import PlaceHolder
 import yfinance as yf
 import streamlit as st
 
 
 st.title("Quick display of a stock, default is MSFT")
-stockNotWorking = st.sidebar.text_input('Yahoo Symbol:')
+# stockNotWorking = st.sidebar.text_input('Yahoo Symbol:')
+stock = st.sidebar.text_input('Yahoo Symbol:')
 
-stock = st.sidebar.selectbox('Yahoo Symbol:',('MSFT','AAPL', 'FDS', 'NDAQ', 'T'))
+# stock = st.sidebar.selectbox('Yahoo Symbol:',('MSFT','AAPL', 'FDS', 'NDAQ', 'T'))
 
 if not stock:
   st.warning("no stock detected, use default symbol")
@@ -26,7 +26,7 @@ yfinance package with more refined intervals
 """)
 
 
-st.line_chart(tickerDf.Close)
+st.line_chart(tickerDf[['Open','Close']])
 
 st.write("""
 Volumes 
