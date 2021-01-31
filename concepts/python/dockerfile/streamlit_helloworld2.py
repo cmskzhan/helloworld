@@ -1,23 +1,37 @@
   
+from logging import PlaceHolder
 import yfinance as yf
 import streamlit as st
-abt=yf.Ticker("FDS")
-tickerDf = abt.history(period='1mo', interval='1h')
 
 
+st.title("Quick display of a stock, default is MSFT")
+stockNotWorking = st.sidebar.text_input('Yahoo Symbol:')
 
-for fieldname, vlu in abt_info.items():
-  print(fieldname, vlu)
+stock = st.sidebar.selectbox('Yahoo Symbol:',('MSFT','AAPL', 'FDS', 'NDAQ', 'T'))
+
+if not stock:
+  st.warning("no stock detected, use default symbol")
+  stock = "MSFT"
+
+
+p = st.sidebar.radio('period:',['1mo','2mo','3mo'])
+
+df=yf.Ticker(stock)
+tickerDf = df.history(period=p, interval='1h')
+
 
 st.write("""
-# Simple Stock Price App
-FDS closing price 
+## SideBars etc
+yfinance package with more refined intervals
 """)
 
-st.line_chart(df.Close)
+
+st.line_chart(tickerDf.Close)
 
 st.write("""
-FDS volumes 
+Volumes 
 """)
 
-st.line_chart(df.Volume)
+st.line_chart(tickerDf.Volume)
+
+st.write(tickerDf)
