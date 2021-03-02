@@ -15,4 +15,8 @@ services:
 
   streamlit2:
     restart: always
-    image: streamlit:helloworld7
+    image: streamlit:alpine3.8hw2
+
+  streamlit3:
+    restart: always
+    image: streamlit:alpine3.8hwbm
