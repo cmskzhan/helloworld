@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hello-world-map
+  namespace: nginx1
+data:
+  first: hello-world
+  second: hello-again

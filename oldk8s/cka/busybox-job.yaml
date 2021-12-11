@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: busybox
+  namespace: cka
+spec:
+  template:
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        command: ["sleep",  "600"]
+      restartPolicy: Never
+  backoffLimit: 4

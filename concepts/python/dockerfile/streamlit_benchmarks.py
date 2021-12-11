@@ -4,7 +4,7 @@ import numpy as np
 from pandas_datareader import data as web
 from datetime import datetime
 
-benchmarks = {'NASDAQ Composit':'^IXIC', 'BitCoin':'BTC-USD', 'S&P 500':'^GSPC', 'NASDAQ 100':'^NDX', 'Russell 2000':'^RUT'}
+benchmarks = {'NASDAQ Composit':'^NDQ', 'BitCoin':'BTC-USD', 'S&P 500':'^SPX', 'NASDAQ 100':'^NDX', 'Russell 2000':'^RUT'}
 
 
 st.write("""
@@ -21,7 +21,7 @@ def get_user_input(bm):
 
 
 startdate, enddate, benchmark = get_user_input(benchmarks)
-df = web.DataReader(benchmarks[benchmark], data_source='yahoo', start=startdate, end=enddate)
+df = web.DataReader(benchmarks[benchmark], data_source='stooq', start=startdate, end=enddate)
 # company_name = get_company_name(symbol.upper())
 
 st.header(benchmark + " Closing Price \n")

@@ -1,2 +1,7 @@
+# update requirements.txt
 docker build -t streamlit:helloworld3 .
 docker run -d -p 8080:8501 streamlit:helloworld3
+
+docker-compose up -d
+http://172.31.170.64:8080/myapp
+# local nic ip

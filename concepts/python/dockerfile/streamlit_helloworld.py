@@ -1,6 +1,6 @@
   
 from pandas_datareader import data as web
-df = web.DataReader("FDS", data_source='yahoo', start='01-01-2020')
+df = web.DataReader("FDS", data_source='stooq', start='01-01-2020')
 #import yfinance as yf
 import streamlit as st
 

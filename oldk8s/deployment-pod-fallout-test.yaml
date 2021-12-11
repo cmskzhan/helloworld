@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginxes
+    env: ttt 
+  name: nginxes
+  namespace: tt
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginxes
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginxes
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        resources: {}
+status: {}
