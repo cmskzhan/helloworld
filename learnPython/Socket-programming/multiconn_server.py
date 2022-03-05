@@ -24,7 +24,7 @@ def service_connection(key, mask):
         recv_data = sock.recv(1024)  # Should be ready to read
         if recv_data:
             data.outb += recv_data
-            with open("received_text.txt", "a") as f:
+            with open("received_text.txt", "a+") as f:
                 f.write(data.outb.decode())
         else:
             print(f"Closing connection to {data.addr}")
