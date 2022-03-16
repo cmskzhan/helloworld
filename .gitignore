@@ -1,2 +1,7 @@
 .vscode/settings.json
 .vscode/launch.json
+concepts/emailz.py
+LearnVisualisation/Exercise Files/*
+concepts/__pycache__/*
+concepts/python/dockerfile/__pycache__/*
+concepts/python/dockerfile/streamlit1/__pycache__/*

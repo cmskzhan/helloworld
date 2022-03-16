@@ -11,12 +11,12 @@ services:
 
   streamlit:
     restart: always
-    image: streamlit:incomeTax
+    image: cmskzhan/streamlits:incomeTax
 
   streamlit2:
     restart: always
-    image: streamlit:alpine3.8hw2
+    image: cmskzhan/streamlits:double_ends_slides_01
 
   streamlit3:
     restart: always
-    image: streamlit:alpine3.8hwbm
+    image: cmskzhan/streamlits:benchmark0.1
