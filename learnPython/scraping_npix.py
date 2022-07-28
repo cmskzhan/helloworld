@@ -2,6 +2,7 @@ import os
 import re
 import requests
 import sys
+import tqdm
 
 """Sraping naughty pix to local hard drive, 
     requires forum thread page to scrape
@@ -32,7 +33,7 @@ if __name__ == "__main__":
             print(f"Scraping {forum_thread_url} to {destination}")
             r = requests.get(forum_thread_url)
             jpg_urls = re.findall(r'https://(?:[a-zA-Z]|[0-9]|[$-_@.&+])+.jpg', r.text)
-            for url in jpg_urls:
+            for url in tqdm.tqdm(jpg_urls):
                 download_image(url, destination)
         else:
             print(f"{i} is not a valid url, skipping this parameter!")
