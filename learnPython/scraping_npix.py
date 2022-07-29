@@ -27,7 +27,11 @@ if __name__ == "__main__":
         if re.match(r'^(http|https)://', i):
             forum_thread_url = i
             foldername= forum_thread_url.split('/')[-1].split('.')[0]
-            destination = r"F:\Downloads\samples\met-art\scraped\{}".format(foldername)
+
+            if os.name == 'nt':
+                destination = r"F:\Downloads\samples\met-art\scraped\{}".format(foldername)
+            else:
+                destination = r"/mnt/4thdd/download/18plus/{}".format(foldername)
             if not os.path.exists(destination):
                 os.makedirs(destination)
             print(f"Scraping {forum_thread_url} to {destination}")
