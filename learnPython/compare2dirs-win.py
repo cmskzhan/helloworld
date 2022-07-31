@@ -1,21 +1,53 @@
 # compare files in two directories recursively
 import os
+import hashlib
+import pandas as pd
 
-dir1 = r"f:\downloads\samples"
-dir2 = r"H:\SanDiskSecureAccess\samples"
+# dir1 = r"f:\downloads\samples"
+# dir2 = r"H:\SanDiskSecureAccess\samples"
 
-def remove_duplicate_files(dir1):
-    recursive_list1 = os.walk(dir1)
-    for (dirpath, dirnames, filenames) in recursive_list1:
+def remove_duplicated_files(dir: str) -> set:
+    filelist = []
+    file_sizes = []
+    for (dirpath, dirnames, filenames) in os.walk(dir):
         for filename in filenames:
             file1 = os.path.join(dirpath, filename)
-            # remove duplicate files
-            # if os.path.exists(file1):
-            #     os.remove(file1)
-            #     print(f"{file1} removed")
+            filelist.append(file1)
+            file_sizes.append(os.path.getsize(file1))
+    
+    df = pd.DataFrame({"file": filelist, "size": file_sizes})
+    
+    # keep files that has the same size, 
+    #   keep=False means unique value is marked as False, hence removed from df
+    remove_unique_size_files = df[df.duplicated(subset="size", keep=False)]
+    # calculate md5
+    md5sum = []
+    for i in remove_unique_size_files['file']:
+        with open(i, 'rb') as f:
+            md5 = hashlib.md5(f.read()).hexdigest()
+            md5sum.append(md5)
+
+    remove_unique_size_files['md5'] = md5sum
+    duplicated_files = remove_unique_size_files[remove_unique_size_files.duplicated(subset="md5", keep=False)] # unique files are filtered out
+    # sort files by full path
+    duplicated_files.sort_values(by='file', ascending=True, inplace=True)
+    merge_duplicates = duplicated_files.drop_duplicates(subset='md5', keep='last') # keep last duplicated files
+    files_to_remove = set(duplicated_files['file']) - set(merge_duplicates['file'])
+
+    print(duplicated_files)
+
+    for i in files_to_remove:
+        os.remove(i)
+    
+    return files_to_remove
 
 
-def compare_files(dir1, dir2):
+
+
+            
+
+
+def compare_files_sizes(dir1, dir2) -> None:
     recursive_list1 = os.walk(dir1)
     recursive_list2 = os.walk(dir2)
     for (dirpath, dirnames, filenames) in recursive_list1:
@@ -33,7 +65,6 @@ def compare_files(dir1, dir2):
                 print(f"{file2} does not exist")
 
 if __name__ == "__main__":
-    compare_files(dir1, dir2)
-
-    #print("Done")
+    #compare_files(dir1, dir2)
+    print(remove_duplicated_files(r"F:\scritps"))
 
