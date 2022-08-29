@@ -37,6 +37,7 @@ for i in login_details["credentials"]["usernames"]:
 
 authenticator = stauth.Authenticate(credentials=login_details['credentials'], cookie_name="streamlit_authenticator", key="streamlit_authenticator" ,cookie_expiry_days=1)
 # create a login widget in main screen
+# name, authentication_status, username = authenticator.login('Login', 'main')
 name, authentication_status, username = authenticator.login('Login', 'main')
 
 # forgot username/password widget
@@ -62,11 +63,12 @@ name, authentication_status, username = authenticator.login('Login', 'main')
 #     except Exception as e:
 #         st.error(e)
 
-def forgot_username_button(auth):
+def forgot_username_button():
     try:
-        username_forgot_username, email_forgot_username = auth.forgot_username('Find my username')
+        username_forgot_username, email_forgot_username = authenticator.forgot_username('Find username')
 
-        if username_forgot_username:
+        if username_forgot_username:          
+            print("Username sent to email")
             return st.success('Username sent securely')
             # Username to be transferred to user securely
         elif username_forgot_username == False:
@@ -74,11 +76,47 @@ def forgot_username_button(auth):
         print(username_forgot_username, email_forgot_username)
     except Exception as e:
         return st.error(e)
+
+
+def forgot_password_button():
+  try:
+    username_forgot_pw, email_forgot_password, random_password = authenticator.forgot_password('Forgot password')
+    if username_forgot_pw:
+        st.success('New password sent securely')
+        # Random password to be transferred to user securely
+    elif username_forgot_pw == False:
+        st.error('Username not found')
+  except Exception as e:
+    st.error(e)
+
     
 
 if not authentication_status:
-    if st.button("forgot username"):
-        forgot_username_button(authenticator)
+  if 'i_forgot_my_username' not in st.session_state:
+      st.session_state['i_forgot_my_username'] = None
+
+  if st.button('Forgot username'):
+      if st.session_state['i_forgot_my_username'] == True:
+          st.session_state['i_forgot_my_username'] = None
+      else:
+          st.session_state['i_forgot_my_username'] = True
+
+  if st.session_state['i_forgot_my_username']:
+      forgot_username_button()
+  
+  if 'i_forgot_my_password' not in st.session_state:
+      st.session_state['i_forgot_my_password'] = None
+
+  if st.button('Forgot password'):
+      if st.session_state['i_forgot_my_password'] == True:
+          st.session_state['i_forgot_my_password'] = None
+      else:
+          st.session_state['i_forgot_my_password'] = True
+
+  if st.session_state['i_forgot_my_password']:
+      forgot_password_button()
+    
+        
     # if st.button("forgot password"):
     #     forgot_username_password_button("password")
 
