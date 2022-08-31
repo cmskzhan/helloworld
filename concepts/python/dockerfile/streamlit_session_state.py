@@ -40,3 +40,21 @@ if st.button("show form"):
         checkbox_input = st.checkbox('Yes or No', key='my_checkbox')
         # submit_button = st.form_submit_button(label='Submit', on_click=form_callback)
         submit_button = st.form_submit_button(label='Submit')
+
+if st.button("show equations"):
+    st.latex(r"\begin{cases} s = V_光 * (t1 - t0)\\ s = V_声 * (t2 - t0) \end{cases}")
+
+myKey = 'my_key'
+
+
+if myKey not in st.session_state:
+    st.session_state[myKey] = False
+
+if st.session_state[myKey]:
+    myBtn = st.button('equation 1')
+    st.latex(r"\begin{cases} s = V_光 * (t1 - t0)\\ s = V_声 * (t2 - t0) \end{cases}")
+    st.session_state[myKey] = False
+else:
+    myBtn = st.button('equation 2')
+    st.empty()
+    st.session_state[myKey] = True
