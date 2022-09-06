@@ -5,6 +5,7 @@ def decor(f):
   f()
   endtime = time.time()
   print("child function run time is ", (endtime-starttime)*1000, "ms")
+  return f
 
 @decor
 def funct():
@@ -13,5 +14,5 @@ def funct():
   print("world")
 
 
-if __name__ == '__main__':
-    funct()
+# if __name__ == '__main__':
+#     funct()
