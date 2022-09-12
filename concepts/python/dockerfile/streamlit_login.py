@@ -1,5 +1,5 @@
 import streamlit as st
-from .streamlit_portfolio_dashboard import threeTabs as dashboard
+import streamlit_portfolio_dashboard as dashboard
 
 login_details = {
   "credentials": {
@@ -28,15 +28,49 @@ login_details = {
   }
 }
 
-st.title("login")
-with st.form(key='login'):
-    username = st.text_input(label='username')
-    password = st.text_input(label='password', type='password')
-    submit_button = st.form_submit_button(label='Login')
-    if submit_button:
-        if username in login_details["credentials"]["usernames"]:
-            if password == login_details["credentials"]["usernames"][username]["password"]:
-                st.success("Login successful")
-                dashboard()
-            else:
-                st.error("Login failed")
+
+
+
+# placeholder = st.empty()
+# placeholder.title("login")
+
+# with placeholder.form("login"):
+#     username = st.text_input("username")
+#     password = st.text_input("password", type="password")
+#     submit_button = st.form_submit_button("submit")
+
+
+#     if submit_button:
+#         if username in login_details["credentials"]["usernames"]:
+#             print(f"username: {username} found")
+#             print(f"password: {login_details['credentials']['usernames'][username]['password']}")
+#             if password == str(login_details["credentials"]["usernames"][username]["password"]):
+#                 print(password)
+#                 st.success("Login successful")
+#                 placeholder.empty()
+#                 with placeholder.container():
+#                     dashboard.threeTabs()
+#             else:
+#                 st.error("Login failed")
+
+#st.session_state['login'] = False
+if 'login' not in st.session_state:
+  login_form = st.form(key='login_form')
+  username = login_form.text_input(label='username')
+  password = login_form.text_input(label='password', type='password')
+  submit_button = login_form.form_submit_button(label='submit')
+
+
+  if submit_button:
+    if username in login_details["credentials"]["usernames"]:
+        if password == str(login_details["credentials"]["usernames"][username]["password"]):
+            st.session_state.username = username
+            st.session_state['login'] = True
+            st.success("Login successful")
+            st.experimental_rerun()
+        else:
+            st.error("Login failed")
+
+if 'login' in st.session_state:
+    st.empty()
+    dashboard.threeTabs()
