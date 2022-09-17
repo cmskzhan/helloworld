@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pandas_datareader.data as web
+import json
 
 def position_calculation(df_in: pd.DataFrame) -> dict:
     """Calculate the position and cost basis of a stock"""
@@ -11,7 +12,22 @@ def position_calculation(df_in: pd.DataFrame) -> dict:
     # GBPCost_per_share = GBPCost / position
     return {'position': position, 'DollarCost': DollarCost, 'GBPCost': GBPCost}
 
+def add_ticker(df_in: pd.DataFrame) -> pd.DataFrame:
+    ''' find ticket through 
+    1. json file
+    2. sec site
+    3. ig pdf
+    4. close match
+    5. if not found, return empty string and throw up err
+    6. for new ticker found through 2,3,4, add to json file'''
+    
+    with open('ticker.json') as f:
+        ticker_dict = json.load(f)
 
+
+    """Add ticker column to the dataframe"""
+    df_in['Ticker'] = df_in['Market'].str.split(' ').str[0]
+    return df_in
 
 
 
