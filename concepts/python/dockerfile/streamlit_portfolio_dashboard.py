@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import pandas_datareader.data as web
 import json
+import re
 
 def position_calculation(df_in: pd.DataFrame) -> dict:
     """Calculate the position and cost basis of a stock"""
@@ -21,12 +23,35 @@ def add_ticker(df_in: pd.DataFrame) -> pd.DataFrame:
     5. if not found, return empty string and throw up err
     6. for new ticker found through 2,3,4, add to json file'''
     
-    with open('ticker.json') as f:
+    df_in['Ticker'] = np.nan #create a new column for ticker
+
+    # load known ticker to column
+    with open('ticker.json') as f:  # TODO: replace json file with correct path
         ticker_dict = json.load(f)
-
-
-    """Add ticker column to the dataframe"""
-    df_in['Ticker'] = df_in['Market'].str.split(' ').str[0]
+    for k, v in ticker_dict.items():
+        df_in.loc[df_in['Market'] == k, 'Ticker'] = v
+    
+    # find unknown ticker through sec site
+    # get ticker is nan
+    df_unkonw_symbol = df_in[df_in['Ticker'].isna()]
+    if len(df_unkonw_symbol) > 0:
+        # search on sec site
+        sec_site_mapping = pd.read_json(r'https://www.sec.gov/files/company_tickers.json', orient='index')
+        sec_site_mapping['Company Name'] = sec_site_mapping['title'].str.lower()
+        sec_site_mapping['Company Name'] = sec_site_mapping['Company Name'].str.replace('\.', '')
+        sec_site_mapping['Company Name'] = sec_site_mapping['Company Name'].str.replace('\,', '')
+        no_tikcer_company_list = df_unkonw_symbol['Market'].str.lower().unique()
+        company_name_to_ticker = {}
+        for i in list(map(lambda x: re.sub(r"\s\(.*\)","",x), no_tikcer_company_list)): # remove (*) from company name
+            if i in sec_site_mapping['Company Name'].values: # if no_ticker_list matchs lower case company name matches 
+                company_name_to_ticker[i] = sec_site_mapping[sec_site_mapping['Company Name'] == i]['ticker'].values[0]
+        # add ticker to df
+        for k, v in company_name_to_ticker.items():
+            df_in.loc[df_in['Market'] == k, 'Ticker'] = v
+        # add ticker to json file
+        with open('ticker.json', 'a') as f: # TODO: replace json file with correct path
+            json.dump(company_name_to_ticker, f)
+    # TODO: unit test this function
     return df_in
 
 
