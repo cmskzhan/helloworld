@@ -15,7 +15,7 @@ def position_calculation(df_in: pd.DataFrame) -> dict:
     return {'position': position, 'DollarCost': DollarCost, 'GBPCost': GBPCost}
 
 def add_ticker(df_in: pd.DataFrame) -> pd.DataFrame:
-    ''' find ticket through 
+    ''' find ticker through 
     1. json file
     2. sec site
     3. ig pdf
