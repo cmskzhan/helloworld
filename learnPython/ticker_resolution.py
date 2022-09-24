@@ -94,7 +94,6 @@ total_instruments = len(df_in['Market'].unique())
 
 # def add_ticker(df_in: pd.DataFrame) -> pd.DataFrame:
 reference_data_json_file = sys.path[0] + '/company_name_to_ticker.json'
-all_tickers_json_file = sys.path[0] + '/all_tickers.json'
 
 if 'Ticker' not in df_in.columns:
     df_in['Ticker'] = np.nan 
@@ -117,7 +116,6 @@ print(f"Total instruments resolved from sec site: {ttl_resolved_instrument} out 
 df_resolved = df_in[df_in['Ticker'].notna()]
 print(df_resolved.drop_duplicates(subset=['Market', 'Ticker']))
 add_ticker_to_json(dict(zip(df_resolved['Market'], df_resolved['Ticker'])), reference_data_json_file)
-add_ticker_to_json(sec_tickers, all_tickers_json_file)
 
 # add ticker from IG pdf
 pdf_tickers = pdf_to_dict('/mnt/f/Downloads/Stockbroking Share List.pdf')
@@ -127,21 +125,20 @@ print(f"Total instruments resolved from json file: {ttl_resolved_instrument} out
 df_resolved = df_in[df_in['Ticker'].notna()]
 print(df_resolved.drop_duplicates(subset=['Market', 'Ticker']))
 add_ticker_to_json(dict(zip(df_resolved['Market'], df_resolved['Ticker'])), reference_data_json_file)
-add_ticker_to_json(pdf_tickers, all_tickers_json_file)
+
 
 # close match tickers from sec site
-close_matched_result = close_matched_tickers(df_in[df_in['Ticker'].isna()]['TPname'], sec_tickers, cutoff_ratio=0.75)
+close_matched_result = close_matched_tickers(df_in[df_in['Ticker'].isna()]['Market'], sec_tickers)
 print(f"{close_matched_result} to be added to dataframe and json file")
-df_in['Ticker'] = df_in['TPname'].map(close_matched_result)
+df_in['Ticker'] = df_in['Market'].map(close_matched_result)
 add_ticker_to_json(close_matched_result, reference_data_json_file)
 
 # close match tickers from IG pdf
-close_matched_result = close_matched_tickers(df_in[df_in['Ticker'].isna()]['TPname'], pdf_tickers, cutoff_ratio=0.75)
+close_matched_result = close_matched_tickers(df_in[df_in['Ticker'].isna()]['Market'], pdf_tickers, cutoff_ratio=0.66)
 print(f"{close_matched_result} to be added to dataframe and json file")
-df_in['Ticker'] = df_in['TPname'].map(close_matched_result)
+df_in['Ticker'] = df_in['Market'].map(close_matched_result)
 add_ticker_to_json(close_matched_result, reference_data_json_file)
 
 # unresolved
 df_unresolved = df_in[df_in['Ticker'].isna()]
 click.secho(f"Unresolved instruments: {df_unresolved['Market'].unique()}", fg='red')
-# bug with instrument with ()
