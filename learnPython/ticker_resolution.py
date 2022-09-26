@@ -6,33 +6,41 @@ import sys
 import PyPDF2
 from datetime import datetime
 from difflib import get_close_matches
-import click
 
 def load_ticker_from_json(json_file: str, df_in: pd.DataFrame) -> pd.DataFrame:
-    with open(json_file) as f: 
-        ticker_dict = json.load(f)
+    try: 
+        with open(json_file) as f: 
+            ticker_dict = json.load(f)
+    except FileNotFoundError:
+        print(f"Error: {json_file} not found")
+        return df_in
     for k, v in ticker_dict.items():
         df_in.loc[df_in['Market'] == k, 'Ticker'] = v
     return df_in
 
 def get_sec_tickers() -> dict:
     # get json from sec site and convert to dict    
-    sec_site_mapping = pd.read_json(r'https://www.sec.gov/files/company_tickers.json', orient='index')
+    try:
+        sec_site_mapping = pd.read_json(r'https://www.sec.gov/files/company_tickers.json', orient='index')
+    except:
+        print("Error: can not get to sec tickers from https://www.sec.gov/files/company_tickers.json")
+        return {}
     sec_site_mapping['title'] = sec_site_mapping['title'].str.replace('\.', '', regex=True)
     sec_site_mapping['title'] = sec_site_mapping['title'].str.replace('\,', '', regex=True)
-    company_name_to_ticker = {}
     return dict(zip(sec_site_mapping['title'], sec_site_mapping['ticker']))   
 
 def pdf_to_dict(pdf_path: str) ->dict:
     start = datetime.now()
     alltext = ""
-    with open(pdf_path, 'rb') as f:
-        pdf = PyPDF2.PdfFileReader(f)
-        pagenumber = pdf.getNumPages()
-        for i in range(pagenumber):
-            page = pdf.getPage(i)
-            page_content = page.extractText()
-            alltext += page_content
+    try:
+        with open(pdf_path, 'rb') as f:
+            pdfReader = PyPDF2.PdfFileReader(f)
+            for i in range(pdfReader.numPages):
+                pageObj = pdfReader.getPage(i)
+                alltext += pageObj.extractText()
+    except:
+        print("Error: can not open pdf")
+        return {}
     
     print(f"total time to read pdf: {datetime.now() - start}")
 
@@ -75,20 +83,37 @@ def close_matched_tickers(unknown_ticker_list: list, tickers_dict: dict, cutoff_
 def match_tickers_dict(ticker_dict: dict, df_in: pd.DataFrame) -> pd.DataFrame:
     ''' match ticker from dict to df_in and return df_in with ticker column'''
     df_in['TPname'] = df_in['Market'].str.replace(r'\(.*\)', '', regex=True).str.strip()
-    df_in['Ticker'] = df_in['TPname'].map(ticker_dict)
+    df_in['Ticker'] = df_in['TPname'].map(ticker_dict).fillna(df_in['Ticker'])
     return df_in
 
 def add_ticker_to_json(new_dict: dict, output_json_file: str):
+    ''' open existing json, read to dict, add new dict, write to json'''
     with open(output_json_file, 'r+') as f:
         existing_dict = json.load(f)
         existing_dict.update(new_dict)
         f.seek(0)
         json.dump(existing_dict, f, indent=4)
 
+def ticker_by_keyword(unresolved_tpname: list, tickers_dict: dict) -> dict:
+    """
+    find keyword in company name and search for relevant ticker in ticker dictionary
+    """
+    not_keyword = ["the", "inc", "corp", "ltd", "limited", "co", "corporation", "company", "plc", "group", "lp", "holdings", "trust", "laboratories"]
+    possible_resolute = {}
+    for i in unresolved_tpname:
+        for j in i.split():
+            if j.lower() not in not_keyword:
+                for k in tickers_dict.keys():
+                    if j in k:
+                        possible_resolute[i] = tickers_dict[k]
+                        break
+            break # only search for first keyword    
+    return possible_resolute
 
 # in main
 with open('/mnt/f/Downloads/TradeHistory.csv', 'r') as f:
     df_in = pd.read_csv(f)
+
 
 total_instruments = len(df_in['Market'].unique())
 
@@ -107,6 +132,8 @@ df_in = load_ticker_from_json(reference_data_json_file, df_in)
 
 ttl_resolved_instrument = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
 print(f"Total instruments resolved from json file: {ttl_resolved_instrument} out of {total_instruments}")
+
+
 
 # add ticker from sec site
 sec_tickers = get_sec_tickers()
@@ -130,15 +157,23 @@ add_ticker_to_json(dict(zip(df_resolved['Market'], df_resolved['Ticker'])), refe
 # close match tickers from sec site
 close_matched_result = close_matched_tickers(df_in[df_in['Ticker'].isna()]['Market'], sec_tickers)
 print(f"{close_matched_result} to be added to dataframe and json file")
-df_in['Ticker'] = df_in['Market'].map(close_matched_result)
+df_in['Ticker'] = df_in['Market'].map(close_matched_result).fillna(df_in['Ticker'])
 add_ticker_to_json(close_matched_result, reference_data_json_file)
 
 # close match tickers from IG pdf
 close_matched_result = close_matched_tickers(df_in[df_in['Ticker'].isna()]['Market'], pdf_tickers, cutoff_ratio=0.66)
 print(f"{close_matched_result} to be added to dataframe and json file")
-df_in['Ticker'] = df_in['Market'].map(close_matched_result)
+df_in['Ticker'] = df_in['Market'].map(close_matched_result).fillna(df_in['Ticker'])
 add_ticker_to_json(close_matched_result, reference_data_json_file)
 
-# unresolved
-df_unresolved = df_in[df_in['Ticker'].isna()]
-click.secho(f"Unresolved instruments: {df_unresolved['Market'].unique()}", fg='red')
+
+# resolve by keyword
+unresolved_company_name = df_in[df_in['Ticker'].isna()]['Market'].unique()
+keyword_resolution = ticker_by_keyword(unresolved_company_name, sec_tickers)
+df_in['Ticker'] = df_in['Market'].map(keyword_resolution).fillna(df_in['Ticker'])
+add_ticker_to_json(keyword_resolution, reference_data_json_file)
+
+
+# check if there is any unresolved company name
+unresolved_company_name = df_in[df_in['Ticker'].isna()]['Market'].unique()
+print(f"Unresolved company name: {unresolved_company_name}")
