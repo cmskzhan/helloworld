@@ -6,6 +6,7 @@ import sys
 import PyPDF2
 from datetime import datetime
 from difflib import get_close_matches
+import tqdm
 
 def load_ticker_from_json(json_file: str, df_in: pd.DataFrame) -> pd.DataFrame:
     try: 
@@ -31,18 +32,19 @@ def get_sec_tickers() -> dict:
 
 def pdf_to_dict(pdf_path: str) ->dict:
     start = datetime.now()
+    print("Start reading pdf file...")
     alltext = ""
     try:
         with open(pdf_path, 'rb') as f:
             pdfReader = PyPDF2.PdfFileReader(f)
-            for i in range(pdfReader.numPages):
+            for i in tqdm.tqdm(range(pdfReader.numPages)):
                 pageObj = pdfReader.getPage(i)
                 alltext += pageObj.extractText()
     except:
         print("Error: can not open pdf")
         return {}
     
-    print(f"total time to read pdf: {datetime.now() - start}")
+    print(f"total time to read {pdfReader.numPages} pages pdf: {datetime.now() - start}")
 
     mapping_lines = []
     for i in re.split(r'\n', alltext):    
@@ -52,8 +54,9 @@ def pdf_to_dict(pdf_path: str) ->dict:
     print(f"Total usable lines found  in IG pdf: {len(mapping_lines)} and time taken: {datetime.now() - start}")
     
     pattern = r"(?P<name>^.*)\s(?P<ticker>\w+.\w+)\s\/\s(?P<symbol>\w+)\s(?P<region>\w+).*\s(?P<ISA>\w)\s(?P<SIPP>\w)$"
+    print("Start parsing pdf lines...")
     all_pdf_tickers2 = pd.DataFrame()
-    for i in mapping_lines:
+    for i in tqdm.tqdm(mapping_lines):
         m = re.search(pattern, i)
         if m:
             # all_pdf_tickers = all_pdf_tickers.append(m.groupdict(), ignore_index=True) also works but futureWarning
@@ -146,6 +149,7 @@ def add_ticker(df_in: pd.DataFrame, output_json_file: str) -> pd.DataFrame:
     ttl_resolved_instrument = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
     print(f"Total instruments resolved after appending sec site: {ttl_resolved_instrument} out of {total_instruments}")
     df_resolved = df_in[df_in['Ticker'].notna()]
+    print(df_resolved.drop_duplicates(subset=['Market', 'Ticker'])[['Market', 'Ticker']])
     add_ticker_to_json(dict(zip(df_resolved['Market'], df_resolved['Ticker'])), reference_data_json_file)
     if ttl_resolved_instrument == total_instruments:
         print("all instruments resolved from sec site")
@@ -167,7 +171,7 @@ def add_ticker(df_in: pd.DataFrame, output_json_file: str) -> pd.DataFrame:
 
     # close match tickers from sec site
     close_matched_result = close_matched_tickers(df_in[df_in['Ticker'].isna()]['Market'], sec_tickers)
-    print(f"{close_matched_result} to be added to dataframe and json file")
+    print(f"{close_matched_result} to be added to dataframe and json file, sec")
     df_in['Ticker'] = df_in['Market'].map(close_matched_result).fillna(df_in['Ticker'])
     add_ticker_to_json(close_matched_result, reference_data_json_file)
     ttl_resolved_instrument = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
@@ -177,7 +181,7 @@ def add_ticker(df_in: pd.DataFrame, output_json_file: str) -> pd.DataFrame:
 
     # close match tickers from IG pdf
     close_matched_result = close_matched_tickers(df_in[df_in['Ticker'].isna()]['Market'], pdf_tickers, cutoff_ratio=0.66)
-    print(f"{close_matched_result} to be added to dataframe and json file")
+    print(f"{close_matched_result} to be added to dataframe and json file, pdf")
     df_in['Ticker'] = df_in['Market'].map(close_matched_result).fillna(df_in['Ticker'])
     add_ticker_to_json(close_matched_result, reference_data_json_file)
     ttl_resolved_instrument = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
@@ -189,6 +193,7 @@ def add_ticker(df_in: pd.DataFrame, output_json_file: str) -> pd.DataFrame:
     # resolve by keyword
     unresolved_company_name = df_in[df_in['Ticker'].isna()]['Market'].unique()
     keyword_resolution = ticker_by_keyword(unresolved_company_name, sec_tickers)
+    print(f"{keyword_resolution} to be added to dataframe and json file, keyword")
     df_in['Ticker'] = df_in['Market'].map(keyword_resolution).fillna(df_in['Ticker'])
     add_ticker_to_json(keyword_resolution, reference_data_json_file)
     ttl_resolved_instrument = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
