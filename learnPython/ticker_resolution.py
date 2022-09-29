@@ -8,6 +8,8 @@ from datetime import datetime
 from difflib import get_close_matches
 import tqdm
 
+reference_data_json_file = sys.path[0] + '/company_name_to_ticker.json'
+
 def load_ticker_from_json(json_file: str, df_in: pd.DataFrame) -> pd.DataFrame:
     try: 
         with open(json_file) as f: 
@@ -83,11 +85,25 @@ def close_matched_tickers(unknown_ticker_list: list, tickers_dict: dict, cutoff_
     return possible_resolute
 
 
-def match_tickers_dict(ticker_dict: dict, df_in: pd.DataFrame) -> pd.DataFrame:
-    ''' match ticker from dict to df_in and return df_in with ticker column'''
-    df_in['TPname'] = df_in['Market'].str.replace(r'\(.*\)', '', regex=True).str.strip()
+def match_tickers_dict(ticker_dict: dict, df_in: pd.DataFrame, close_match=False):
+    ''' match ticker from dict to df_in, write dict to json file 
+    return df_in with ticker column and number of unresolved tickers'''
+    if close_match:
+        df_in['Ticker'] = df_in['Market'].map(ticker_dict).fillna(df_in['Ticker'])
+        add_ticker_to_json(ticker_dict, reference_data_json_file)
+        resolved = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
+        return df_in, resolved
+
+    if 'TPname' not in df_in.columns:
+        df_in['TPname'] = df_in['Market'].str.replace(r'\(.*\)', '', regex=True).str.strip()
+    
     df_in['Ticker'] = df_in['TPname'].map(ticker_dict).fillna(df_in['Ticker'])
-    return df_in
+    df_resolved = df_in[df_in['Ticker'].notna()]
+    print(df_resolved.drop_duplicates(subset=['Market', 'Ticker'])[['Market', 'Ticker']])
+    add_ticker_to_json(dict(zip(df_resolved['Market'], df_resolved['Ticker'])), reference_data_json_file)
+    resolved = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
+    return df_in, resolved
+
 
 def add_ticker_to_json(new_dict: dict, output_json_file: str):
     ''' open existing json, read to dict, add new dict, write to json'''
@@ -117,53 +133,35 @@ def ticker_by_keyword(unresolved_tpname: list, tickers_dict: dict) -> dict:
 
 
 def add_ticker(df_in: pd.DataFrame, output_json_file: str) -> pd.DataFrame:
-
-    total_instruments = len(df_in['Market'].unique())
-
-    # def add_ticker(df_in: pd.DataFrame) -> pd.DataFrame:
-    reference_data_json_file = sys.path[0] + '/company_name_to_ticker.json'
+    total_instruments = len(df_in['Market'].unique())    
 
     if 'Ticker' not in df_in.columns:
         df_in['Ticker'] = np.nan 
-        
     else:
         print("csv already has ticker in it, no need to add ticker")
         return df_in
 
     # add ticker from json file
     df_in = load_ticker_from_json(reference_data_json_file, df_in)
-
-    ttl_resolved_instrument = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
-
+    ttl_resolved_instrument = len(df_in[df_in['Ticker'].notna()]['Market'].unique()) 
     if ttl_resolved_instrument == total_instruments:
         print("all instruments resolved from json file")
         return df_in
     else:
         print(f"Total instruments resolved from json file: {ttl_resolved_instrument} out of {total_instruments}")
 
-
-
     # add ticker from sec site
     sec_tickers = get_sec_tickers()
-    df_in = match_tickers_dict(sec_tickers, df_in)
-    ttl_resolved_instrument = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
+    df_in, ttl_resolved_instrument = match_tickers_dict(sec_tickers, df_in)
     print(f"Total instruments resolved after appending sec site: {ttl_resolved_instrument} out of {total_instruments}")
-    df_resolved = df_in[df_in['Ticker'].notna()]
-    print(df_resolved.drop_duplicates(subset=['Market', 'Ticker'])[['Market', 'Ticker']])
-    add_ticker_to_json(dict(zip(df_resolved['Market'], df_resolved['Ticker'])), reference_data_json_file)
     if ttl_resolved_instrument == total_instruments:
         print("all instruments resolved from sec site")
         return df_in
 
-
     # add ticker from IG pdf
     pdf_tickers = pdf_to_dict('/mnt/f/Downloads/Stockbroking Share List.pdf')
-    df_in = match_tickers_dict(pdf_tickers, df_in)
-    ttl_resolved_instrument = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
+    df_in, ttl_resolved_instrument = match_tickers_dict(pdf_tickers, df_in)
     print(f"Total instruments resolved after appending json file: {ttl_resolved_instrument} out of {total_instruments}")
-    df_resolved = df_in[df_in['Ticker'].notna()]
-    print(df_resolved.drop_duplicates(subset=['Market', 'Ticker']))
-    add_ticker_to_json(dict(zip(df_resolved['Market'], df_resolved['Ticker'])), reference_data_json_file)
     if ttl_resolved_instrument == total_instruments:
         print("all instruments resolved after importing IG pdf")
         return df_in
@@ -172,9 +170,7 @@ def add_ticker(df_in: pd.DataFrame, output_json_file: str) -> pd.DataFrame:
     # close match tickers from sec site
     close_matched_result = close_matched_tickers(df_in[df_in['Ticker'].isna()]['Market'], sec_tickers)
     print(f"{close_matched_result} to be added to dataframe and json file, sec")
-    df_in['Ticker'] = df_in['Market'].map(close_matched_result).fillna(df_in['Ticker'])
-    add_ticker_to_json(close_matched_result, reference_data_json_file)
-    ttl_resolved_instrument = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
+    df_in, ttl_resolved_instrument = match_tickers_dict(close_matched_result, df_in, close_match=True)
     if ttl_resolved_instrument == total_instruments:
         print("all instruments resolved after close match sec site dict")
         return df_in
@@ -182,30 +178,25 @@ def add_ticker(df_in: pd.DataFrame, output_json_file: str) -> pd.DataFrame:
     # close match tickers from IG pdf
     close_matched_result = close_matched_tickers(df_in[df_in['Ticker'].isna()]['Market'], pdf_tickers, cutoff_ratio=0.66)
     print(f"{close_matched_result} to be added to dataframe and json file, pdf")
-    df_in['Ticker'] = df_in['Market'].map(close_matched_result).fillna(df_in['Ticker'])
-    add_ticker_to_json(close_matched_result, reference_data_json_file)
-    ttl_resolved_instrument = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
+    df_in, ttl_resolved_instrument = match_tickers_dict(close_matched_result, df_in, close_match=True)
     if ttl_resolved_instrument == total_instruments:
         print("all instruments resolved after close match pdf dict")
         return df_in
-
 
     # resolve by keyword
     unresolved_company_name = df_in[df_in['Ticker'].isna()]['Market'].unique()
     keyword_resolution = ticker_by_keyword(unresolved_company_name, sec_tickers)
     print(f"{keyword_resolution} to be added to dataframe and json file, keyword")
-    df_in['Ticker'] = df_in['Market'].map(keyword_resolution).fillna(df_in['Ticker'])
-    add_ticker_to_json(keyword_resolution, reference_data_json_file)
-    ttl_resolved_instrument = len(df_in[df_in['Ticker'].notna()]['Market'].unique())
+    df_in, ttl_resolved_instrument = match_tickers_dict(keyword_resolution, df_in, close_match=True)
     if ttl_resolved_instrument == total_instruments:
         print("all instruments resolved after keyword resolution")
         return df_in
 
-
-    # check if there is any unresolved company name
+    # check if there is any unresolved company name, for future manual resolution or function improvement
     unresolved_company_name = df_in[df_in['Ticker'].isna()]['Market'].unique()
     print(f"Unresolved company name: {unresolved_company_name}")
     print(f"Manually add new instrument to json file {output_json_file}")
+    return df_in
 
 
 def main():
