@@ -1,5 +1,6 @@
 ```mermaid
   flowchart TD;
+      title([add_ticker])
       B[Upload TradeHistory csv and Import to DataFrame] --> C[import Json and add tickers in]
       C --> D{All tickers resolved?}
       D -->|Yes| E[Return DataFrame]
