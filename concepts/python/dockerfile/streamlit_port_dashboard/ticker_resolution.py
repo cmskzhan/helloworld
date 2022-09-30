@@ -115,24 +115,24 @@ def add_ticker_to_json(new_dict: dict, output_json_file: str):
 
 def ticker_by_keyword(unresolved_tpname: list, tickers_dict: dict) -> dict:
     """
-    find keyword in company name and search for relevant ticker in ticker dictionary
+    find keyword in company name and search for relevant ticker in ticker dictionary, case insensitive
     """
-    not_keyword = ["the", "inc", "corp", "ltd", "limited", "co", "corporation", "company", "plc", "group", "lp", "holdings", "trust", "laboratories"]
+    not_keyword = ["the", "inc", "corp", "ltd", "limited", "co", "corporation", 
+    "company", "plc", "group", "lp", "holdings", "trust", "laboratories"] # non-keywords must be lower case
     possible_resolute = {}
-    for i in unresolved_tpname:
-        for j in i.split():
-            if j.lower() not in not_keyword:
+    for i in unresolved_tpname: 
+        for j in [x.lower() for x in i.split()]:
+            if j not in not_keyword:
                 for k in tickers_dict.keys():
-                    if j in k:
+                    if j in k.lower():
                         possible_resolute[i] = tickers_dict[k]
                         break
-            break # only search for first keyword    
-    return possible_resolute
+                break
+    return possible_resolute      
 
 
 
-
-def add_ticker(df_in: pd.DataFrame, output_json_file: str) -> pd.DataFrame:
+def add_ticker(df_in: pd.DataFrame, output_json_file = reference_data_json_file) -> pd.DataFrame:
     total_instruments = len(df_in['Market'].unique())    
 
     if 'Ticker' not in df_in.columns:
@@ -159,7 +159,7 @@ def add_ticker(df_in: pd.DataFrame, output_json_file: str) -> pd.DataFrame:
         return df_in
 
     # add ticker from IG pdf
-    pdf_tickers = pdf_to_dict('/mnt/f/Downloads/Stockbroking Share List.pdf')
+    pdf_tickers = pdf_to_dict(f'{sys.path[0]}/Stockbroking Share List.pdf')
     df_in, ttl_resolved_instrument = match_tickers_dict(pdf_tickers, df_in)
     print(f"Total instruments resolved after appending json file: {ttl_resolved_instrument} out of {total_instruments}")
     if ttl_resolved_instrument == total_instruments:
@@ -176,7 +176,7 @@ def add_ticker(df_in: pd.DataFrame, output_json_file: str) -> pd.DataFrame:
         return df_in
 
     # close match tickers from IG pdf
-    close_matched_result = close_matched_tickers(df_in[df_in['Ticker'].isna()]['Market'], pdf_tickers, cutoff_ratio=0.66)
+    close_matched_result = close_matched_tickers(df_in[df_in['Ticker'].isna()]['Market'], pdf_tickers, cutoff_ratio=0.667)
     print(f"{close_matched_result} to be added to dataframe and json file, pdf")
     df_in, ttl_resolved_instrument = match_tickers_dict(close_matched_result, df_in, close_match=True)
     if ttl_resolved_instrument == total_instruments:
@@ -186,6 +186,7 @@ def add_ticker(df_in: pd.DataFrame, output_json_file: str) -> pd.DataFrame:
     # resolve by keyword
     unresolved_company_name = df_in[df_in['Ticker'].isna()]['Market'].unique()
     keyword_resolution = ticker_by_keyword(unresolved_company_name, sec_tickers)
+    #keyword_resolution = ticker_by_keyword(unresolved_company_name, pdf_tickers)
     print(f"{keyword_resolution} to be added to dataframe and json file, keyword")
     df_in, ttl_resolved_instrument = match_tickers_dict(keyword_resolution, df_in, close_match=True)
     if ttl_resolved_instrument == total_instruments:
@@ -202,7 +203,7 @@ def add_ticker(df_in: pd.DataFrame, output_json_file: str) -> pd.DataFrame:
 def main():
     with open('/mnt/f/Downloads/TradeHistory.csv', 'r') as f:
         df_in = pd.read_csv(f)
-    df_out = add_ticker(df_in, '/mnt/f/Downloads/company_name_to_ticker.json')
+    df_out = add_ticker(df_in)
     print(df_out)
 
 if __name__ == "__main__":
