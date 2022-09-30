@@ -57,7 +57,7 @@ def pdf_to_dict(pdf_path: str) ->dict:
         if i.endswith('Y') or i.endswith('N'):
             mapping_lines.append(i)
     print(f"Total usable lines found  in IG pdf: {len(mapping_lines)} and time taken: {datetime.now() - start}")
-    
+    # TODO: solve bad resolution for schroders
     pattern = r"(?P<name>^.*)\s(?P<ticker>\w+.\w+)\s\/\s(?P<symbol>\w+)\s(?P<region>\w+).*\s(?P<ISA>\w)\s(?P<SIPP>\w)$"
     print("Start parsing pdf lines...")
     all_pdf_tickers2 = pd.DataFrame()
