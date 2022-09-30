@@ -2,13 +2,16 @@ import pandas as pd
 import numpy as np
 import json
 import re
-import sys
+import os
 import PyPDF2
 from datetime import datetime
 from difflib import get_close_matches
 import tqdm
 
-reference_data_json_file = sys.path[0] + '/company_name_to_ticker.json'
+# reference_data_json_file = sys.path[0] + '/company_name_to_ticker.json'
+pwd = os.path.dirname(os.path.realpath(__file__))
+reference_data_json_file = pwd + '/company_name_to_ticker.json'
+print("reference_data_json_file: ", reference_data_json_file)
 
 def load_ticker_from_json(json_file: str, df_in: pd.DataFrame) -> pd.DataFrame:
     try: 
@@ -159,7 +162,7 @@ def add_ticker(df_in: pd.DataFrame, output_json_file = reference_data_json_file)
         return df_in
 
     # add ticker from IG pdf
-    pdf_tickers = pdf_to_dict(f'{sys.path[0]}/Stockbroking Share List.pdf')
+    pdf_tickers = pdf_to_dict(f'{pwd}/Stockbroking Share List.pdf')
     df_in, ttl_resolved_instrument = match_tickers_dict(pdf_tickers, df_in)
     print(f"Total instruments resolved after appending json file: {ttl_resolved_instrument} out of {total_instruments}")
     if ttl_resolved_instrument == total_instruments:
@@ -197,7 +200,8 @@ def add_ticker(df_in: pd.DataFrame, output_json_file = reference_data_json_file)
     unresolved_company_name = df_in[df_in['Ticker'].isna()]['Market'].unique()
     print(f"Unresolved company name: {unresolved_company_name}")
     print(f"Manually add new instrument to json file {output_json_file}")
-    return df_in
+    print("return dataframe with resolved tickers only")
+    return df_in[df_in['Ticker'].notna()]
 
 
 def main():
