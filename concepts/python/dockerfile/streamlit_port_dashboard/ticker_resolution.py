@@ -57,7 +57,6 @@ def pdf_to_dict(pdf_path: str) ->dict:
         if i.endswith('Y') or i.endswith('N'):
             mapping_lines.append(i)
     print(f"Total usable lines found  in IG pdf: {len(mapping_lines)} and time taken: {datetime.now() - start}")
-    # TODO: solve bad resolution for schroders
     pattern = r"(?P<name>^.*)\s(?P<ticker>\w+.\w+)\s\/\s(?P<symbol>\w+)\s(?P<region>\w+).*\s(?P<ISA>\w)\s(?P<SIPP>\w)$"
     print("Start parsing pdf lines...")
     all_pdf_tickers2 = pd.DataFrame()
@@ -67,13 +66,17 @@ def pdf_to_dict(pdf_path: str) ->dict:
             # all_pdf_tickers = all_pdf_tickers.append(m.groupdict(), ignore_index=True) also works but futureWarning
             all_pdf_tickers2 = pd.concat([all_pdf_tickers2, pd.DataFrame.from_dict(m.groupdict(), orient='index').T], ignore_index=True)
     print(f"Total extracted records found in IG pdf: {len(all_pdf_tickers2)} and time taken: {datetime.now() - start}")
-    # filter to US stocks only
-    all_USA_tickers = all_pdf_tickers2[all_pdf_tickers2['region'] == 'US']
+    
+    all_pdf_tickers = all_pdf_tickers2[all_pdf_tickers2['ticker'].apply(no_lowercase)] # remove ticker with lowercase to avoid duplication eg SDRt.L
+    all_USA_tickers = all_pdf_tickers[all_pdf_tickers2['region'] == 'US'] 
     us_tickers = dict(zip(all_USA_tickers['name'], all_USA_tickers['symbol']))
-    non_USA_tickers = all_pdf_tickers2[all_pdf_tickers2['region'] != 'US']
+    non_USA_tickers = all_pdf_tickers[all_pdf_tickers2['region'] != 'US']
     non_us_tickers = dict(zip(non_USA_tickers['name'], non_USA_tickers['ticker']))
 
     return {**non_us_tickers, **us_tickers}
+
+def no_lowercase(s: str) -> bool:
+    return not bool(re.search(r'[a-z]', s))
 
 def close_matched_tickers(unknown_ticker_list: list, tickers_dict: dict, cutoff_ratio = 0.801) -> dict:
     """
