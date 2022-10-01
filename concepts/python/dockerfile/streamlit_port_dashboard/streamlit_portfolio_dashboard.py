@@ -57,7 +57,8 @@ def threeTabs():
                     st.dataframe(df_trade_history.head(3))
 
                     st.subheader("Open positions and costs")
-                    st.write(openPositions(df_trade_history))
+                    with st.spinner("Loading tickers into dataframe, take up to 30 seconds..."):
+                        st.dataframe(openPositions(df_trade_history))
 
                     market_list = df_trade_history['Market'].unique()
                     market = st.selectbox("Select Stock", market_list)
