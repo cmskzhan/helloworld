@@ -5,3 +5,4 @@ LearnVisualisation/Exercise Files/*
 concepts/__pycache__/*
 concepts/python/dockerfile/__pycache__/*
 concepts/python/dockerfile/streamlit1/__pycache__/*
+concepts/python/dockerfile/streamlit_port_dashboard/__pycache__/*

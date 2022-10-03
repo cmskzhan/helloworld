@@ -9,7 +9,6 @@ def replace_duplicated_ticker(df_in: pd.DataFrame) -> pd.DataFrame:
     # st.write(os.path.dirname(os.path.realpath(__file__)) + '/company_name_to_ticker.json')
     df = tr.add_ticker(df_in).sort_values('Settlement date', ascending=False)
     df_find_dup_ticker = df[['Ticker','Market', 'Settlement date']].drop_duplicates(subset=['Ticker','Market'], keep='first')
-
     df_find_dup_ticker = df_find_dup_ticker[df_find_dup_ticker.duplicated(subset=['Ticker'], keep=False)].sort_values('Settlement date', ascending=False)
     df_find_dup_ticker = df_find_dup_ticker.reset_index(drop=True)
     for i in df_find_dup_ticker['Market'][1:len(df_find_dup_ticker)]:
@@ -23,10 +22,10 @@ def dollar_format():
 def pound_format():
     return "£{:,.2f}"
 
-def openPositions(df_in: pd.DataFrame) -> pd.DataFrame:
+def openPositionsCosts(df_in: pd.DataFrame) -> pd.DataFrame:
     """Calculate open position and costs for each ticker"""
     df = replace_duplicated_ticker(df_in)
-    df_op = df.groupby(['Market','Ticker']).sum().sort_values('Quantity', ascending=False)
+    df_op = df.groupby(['Market','Ticker']).sum()
     df_op['Consideration'] = df_op['Consideration'].apply(dollar_format().format)
     df_op['Cost/Proceeds'] = df_op['Cost/Proceeds'].apply(pound_format().format)
     df_op['Commission'] = df_op['Commission'].apply(pound_format().format)
@@ -58,7 +57,7 @@ def threeTabs():
 
                     st.subheader("Open positions and costs")
                     with st.spinner("Loading tickers into dataframe, take up to 30 seconds..."):
-                        st.dataframe(openPositions(df_trade_history))
+                        st.dataframe(openPositionsCosts(df_trade_history).sort_values('ttl £ invested', ascending=False))
 
                     market_list = df_trade_history['Market'].unique()
                     market = st.selectbox("Select Stock", market_list)

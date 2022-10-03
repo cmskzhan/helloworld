@@ -35,7 +35,11 @@ def get_sec_tickers() -> dict:
     sec_site_mapping['title'] = sec_site_mapping['title'].str.replace('\,', '', regex=True)
     return dict(zip(sec_site_mapping['title'], sec_site_mapping['ticker']))   
 
-def pdf_to_dict(pdf_path: str) ->dict:
+
+
+
+def pdf_to_dataframe(pdf_path: str) -> pd.DataFrame:
+    """read from local pdf and return_type accepts symbol or ticker or US-symbol """
     start = datetime.now()
     print("Start reading pdf file...")
     alltext = ""
@@ -59,21 +63,51 @@ def pdf_to_dict(pdf_path: str) ->dict:
     print(f"Total usable lines found  in IG pdf: {len(mapping_lines)} and time taken: {datetime.now() - start}")
     pattern = r"(?P<name>^.*)\s(?P<ticker>\w+.\w+)\s\/\s(?P<symbol>\w+)\s(?P<region>\w+).*\s(?P<ISA>\w)\s(?P<SIPP>\w)$"
     print("Start parsing pdf lines...")
-    all_pdf_tickers2 = pd.DataFrame()
+    all_pdf_data = pd.DataFrame()
     for i in tqdm.tqdm(mapping_lines):
         m = re.search(pattern, i)
         if m:
             # all_pdf_tickers = all_pdf_tickers.append(m.groupdict(), ignore_index=True) also works but futureWarning
-            all_pdf_tickers2 = pd.concat([all_pdf_tickers2, pd.DataFrame.from_dict(m.groupdict(), orient='index').T], ignore_index=True)
-    print(f"Total extracted records found in IG pdf: {len(all_pdf_tickers2)} and time taken: {datetime.now() - start}")
-    
-    all_pdf_tickers = all_pdf_tickers2[all_pdf_tickers2['ticker'].apply(no_lowercase)] # remove ticker with lowercase to avoid duplication eg SDRt.L
-    all_USA_tickers = all_pdf_tickers[all_pdf_tickers2['region'] == 'US'] 
-    us_tickers = dict(zip(all_USA_tickers['name'], all_USA_tickers['symbol']))
-    non_USA_tickers = all_pdf_tickers[all_pdf_tickers2['region'] != 'US']
-    non_us_tickers = dict(zip(non_USA_tickers['name'], non_USA_tickers['ticker']))
+            all_pdf_data = pd.concat([all_pdf_data, pd.DataFrame.from_dict(m.groupdict(), orient='index').T], ignore_index=True)
+    pdf_uppercase_ticker_only = all_pdf_data[all_pdf_data['ticker'].apply(no_lowercase)] # remove ticker with lowercase to avoid duplication eg SDRt.L
+    print(f"Total extracted records found in IG pdf: {len(pdf_uppercase_ticker_only)} and time taken: {datetime.now() - start}")
+    return pdf_uppercase_ticker_only
 
-    return {**non_us_tickers, **us_tickers}
+def ig_pdf_dataframe_to_dict(df_in: pd.DataFrame, return_type: str = 'symbol') -> dict:
+    """ from pdf dataframe to dict with key as company name and different kind of values:  
+    1. ticker (MSCI.N, NDAQ.O, 888L) 
+    2. symbol (FDS, PAY)
+    3. free OHLCV data
+      3.1. yahoo
+      3.2. alphavantage
+      3.3. iex
+      3.4. polygon.io
+      3.5. eodhd
+      3.6. 12data
+    example: ig_pdf_dataframe_to_dict(pdf_dataframe, return_type='symbol')"""    
+    supported_free_ohlc_data = ['yahoo', 'alphavantage', 'iex', 'polygon.io', 'eodhd', '12data']
+    if return_type == "symbol":
+        return dict(zip(df_in['name'], df_in['symbol']))
+    elif return_type == "ticker":
+        all_tickers = dict(zip(df_in['name'], df_in['ticker']))
+        return all_tickers
+    elif return_type in supported_free_ohlc_data:
+        usa_noly = df_in[df_in['region'] == 'US'] 
+        us_tickers = dict(zip(usa_noly['name'], usa_noly['symbol']))
+        lse_only = df_in[df_in['region'] == 'LN']
+        if return_type == 'yahoo':
+            lse_tickers = dict(zip(lse_only['name'], lse_only['symbol'] + '.L'))
+            return {**lse_tickers, **us_tickers}
+        elif return_type == 'eodhd': # US only
+            return us_tickers
+        elif return_type == 'alphavantage': # TODO: to check api document + polygon.io
+            return us_tickers
+        elif return_type == 'iex':
+            lse_tickers = dict(zip(lse_only['name'], lse_only['symbol'] + '-LN'))
+    
+    else:
+        raise ValueError("return_type must be a valid option")
+
 
 def no_lowercase(s: str) -> bool:
     return not bool(re.search(r'[a-z]', s))
