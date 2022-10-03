@@ -18,7 +18,7 @@ class OHLCData:
     alpha_vantage:  MSCI = OHLCData("MSCI", "2022-08-08").alpha_vantage_request() 
                     only symbol required, set a dummy start date
                     US symbol only? to check!
-                    will load all ohlc data for the symbol, more work needed
+                    will load all ohlc data for the symbol, TODO: more work needed
             
     polygon:        MSCI = OHLCData("MSCI", "2022-08-08", "2022-08-12", interval="2h").polygon_io_vw()
                     2 yrs historical data
@@ -33,8 +33,10 @@ class OHLCData:
                     interval only support on daily d, weekly w and monthly m
 
     12Data:         MSCI = OHLCData("MSCI", "2022-08-08", "2022-08-12", interval="1m").twelveData()
+                    MULTI = OHLCData(["MSCI","FDS","AAPL"], "2022-09-28", interval="1day").twelveData() 
                     interval supports 1min, 5min, 15min, 30min, 45min, 1h, 2h, 4h, 1day, 1week, 1month
                     US market symbol only for free tier
+                    allow multiple symbols
 
     iex:            MSCI = OHLCData("MSCI", "2022-07-18", interval="3days").iex_request()
                     up to 15 yrs historical data, mostly only 5 to 10 yrs
@@ -382,13 +384,16 @@ class OHLCData:
         elif type(symbol) == list:
             data = {"symbol": ",".join(symbol), "interval": interval,  "start_date": start_date, "end_date": end_date, "apikey": apikey}
             response = requests.get(url, data)    
-            print(response.text)
             df = pd.read_json(response.text)
-            # TODO: further conversion in ttt.ipynb
-            print(df)
-        
+            # concat all dict df into one
+            l = []
+            count = 0
+            for i in df.columns:
+                l.append(pd.json_normalize(response.json()[i]['values']))
+                l[count]['symbol'] = i
+                count += 1
+            df = pd.concat(l)
         return df
-
 
 
 def main():
