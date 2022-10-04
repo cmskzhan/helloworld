@@ -86,25 +86,29 @@ def ig_pdf_dataframe_to_dict(df_in: pd.DataFrame, return_type: str = 'symbol') -
       3.6. 12data
     example: ig_pdf_dataframe_to_dict(pdf_dataframe, return_type='symbol')"""    
     supported_free_ohlc_data = ['yahoo', 'alphavantage', 'iex', 'polygon.io', 'eodhd', '12data']
-    if return_type == "symbol":
-        return dict(zip(df_in['name'], df_in['symbol']))
-    elif return_type == "ticker":
+    region_suffix_mapping = {'AU':'AX', 'AV':'VI', 'BB':'BR', 'GY':'DE', 'TH':'DE', 'ID':'I', 'NA':'AS', 'LN':'L', 'PZ':'NXX', 'LI':'L', 'EF':'E'}
+    if return_type == "ticker":
         all_tickers = dict(zip(df_in['name'], df_in['ticker']))
         return all_tickers
-    elif return_type in supported_free_ohlc_data:
-        usa_noly = df_in[df_in['region'] == 'US'] 
+    elif return_type == "symbol":
+        usa_noly = df_in[df_in['region'] == 'US']
         us_tickers = dict(zip(usa_noly['name'], usa_noly['symbol']))
-        lse_only = df_in[df_in['region'] == 'LN']
-        if return_type == 'yahoo':
-            lse_tickers = dict(zip(lse_only['name'], lse_only['symbol'] + '.L'))
-            return {**lse_tickers, **us_tickers}
-        elif return_type == 'eodhd': # US only
-            return us_tickers
-        elif return_type == 'alphavantage': # TODO: to check api document + polygon.io
-            return us_tickers
-        elif return_type == 'iex':
-            lse_tickers = dict(zip(lse_only['name'], lse_only['symbol'] + '-LN'))
-    
+        for k, v in region_suffix_mapping.items():
+            df_in.loc[df_in['region'] == k, 'symbol'] = df_in['symbol'] + '.' + v
+        all_other_symbols = dict(zip(df_in['name'], df_in['symbol']))
+        return {**all_other_symbols, **us_tickers}    
+    # elif return_type in supported_free_ohlc_data:
+    #     usa_noly = df_in[df_in['region'] == 'US']
+    #     us_tickers = dict(zip(usa_noly['name'], usa_noly['symbol']))
+    #     lse_only = df_in[df_in['region'] == 'LN']
+    #     if return_type == 'yahoo':
+    #         lse_tickers = dict(zip(lse_only['name'], lse_only['symbol'] + '.L'))
+    #         return {**lse_tickers, **us_tickers}
+    #     elif return_type in ["eodhd","12data", "alphavantage"] : # US only -- todo: to check api document for alphavantage + polygon.io
+    #         return us_tickers
+    #     elif return_type == 'iex':
+    #         lse_tickers = dict(zip(lse_only['name'], lse_only['symbol'] + '-LN'))
+    #         return {**lse_tickers, **us_tickers}
     else:
         raise ValueError("return_type must be a valid option")
 
@@ -199,7 +203,8 @@ def add_ticker(df_in: pd.DataFrame, output_json_file = reference_data_json_file)
         return df_in
 
     # add ticker from IG pdf
-    pdf_tickers = pdf_to_dict(f'{pwd}/Stockbroking Share List.pdf')
+    df_pdf = pdf_to_dataframe(f'{pwd}/Stockbroking Share List.pdf')
+    pdf_tickers = ig_pdf_dataframe_to_dict(df_pdf)
     df_in, ttl_resolved_instrument = match_tickers_dict(pdf_tickers, df_in)
     print(f"Total instruments resolved after appending json file: {ttl_resolved_instrument} out of {total_instruments}")
     if ttl_resolved_instrument == total_instruments:
