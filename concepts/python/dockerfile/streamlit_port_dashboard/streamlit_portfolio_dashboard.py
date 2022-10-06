@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import ticker_resolution as tr
+import get12dataEODprice as g12
 
 def replace_duplicated_ticker(df_in: pd.DataFrame) -> pd.DataFrame:
     """Due to corp events such as SPAC conversion, ticker may change. 
@@ -22,6 +23,7 @@ def dollar_format():
 def pound_format():
     return "£{:,.2f}"
 
+
 def openPositionsCosts(df_in: pd.DataFrame) -> pd.DataFrame:
     """Calculate open position and costs for each ticker"""
     df = replace_duplicated_ticker(df_in)
@@ -30,9 +32,13 @@ def openPositionsCosts(df_in: pd.DataFrame) -> pd.DataFrame:
     df_op['Cost/Proceeds'] = df_op['Cost/Proceeds'].apply(pound_format().format)
     df_op['Commission'] = df_op['Commission'].apply(pound_format().format)
     df_op['Charges'] = df_op['Charges'].apply(pound_format().format)
+    symbols_with_position = df_op[df_op['Quantity'] > 0].index.get_level_values('Ticker').tolist()
+    us_symbols_with_position = [x for x in symbols_with_position if x.count('.') == 0]
+    df_op['Last Close'] = df_op.index.get_level_values("Ticker").map(g12.getEODprice(us_symbols_with_position)).astype(float)
+    df_op['current $ position'] = df_op['Quantity'] * df_op['Last Close']
     column_rename = {'Consideration': '$ invested excl costs', 'Cost/Proceeds': 'ttl £ invested'}
-    df_op = df_op.rename(columns=column_rename)
-    return df_op[['Quantity', '$ invested excl costs', 'ttl £ invested', 'Commission','Charges']]
+    df_op = df_op.rename(columns=column_rename)    
+    return df_op[['Quantity', '$ invested excl costs', 'current $ position','ttl £ invested', 'Commission','Charges']]
 
 
 def threeTabs():
@@ -57,7 +63,7 @@ def threeTabs():
 
                     st.subheader("Open positions and costs")
                     with st.spinner("Loading tickers into dataframe, take up to 30 seconds..."):
-                        st.dataframe(openPositionsCosts(df_trade_history).sort_values('ttl £ invested', ascending=False))
+                        st.dataframe(openPositionsCosts(df_trade_history).sort_values('Quantity', ascending=False))
 
                     market_list = df_trade_history['Market'].unique()
                     market = st.selectbox("Select Stock", market_list)
