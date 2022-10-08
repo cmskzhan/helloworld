@@ -37,10 +37,16 @@ def openPositionsCosts(df_in: pd.DataFrame) -> pd.DataFrame:
     uk_symbols_with_position = [x for x in symbols_with_position if x[-2:] == '.L'] # todo: add more market in other region in future
     all_symbols_close_price = {**g12.getEODpriceUSA(us_symbols_with_position), **g12.getEODpriceUK(uk_symbols_with_position)}
     df_op['Last Close'] = df_op.index.get_level_values("Ticker").map(all_symbols_close_price).astype(float)
-    df_op['current $ position'] = df_op['Quantity'] * df_op['Last Close']
+    df_op['current position'] = df_op['Quantity'] * df_op['Last Close']
+    df_uk = df_op[df_op.index.get_level_values('Ticker').isin(uk_symbols_with_position)] # format uk symbol use £ sign
+    df_uk['current position'] = df_op['Quantity'] * df_op['Last Close'] / 100
+    df_op['current position'] = df_op['current position'].apply(dollar_format().format)
+    df_uk['current position'] = df_uk['current position'].apply(pound_format().format)
+    df_uk['Consideration'] = df_uk['Consideration'].str.replace('$', '£')
+    df_op.update(df_uk)
     column_rename = {'Consideration': '$ invested excl costs', 'Cost/Proceeds': 'ttl £ invested'}
     df_op = df_op.rename(columns=column_rename)    
-    return df_op[['Quantity', '$ invested excl costs', 'current $ position','ttl £ invested', 'Commission','Charges']]
+    return df_op[['Quantity', '$ invested excl costs', 'current position','ttl £ invested', 'Commission','Charges']]
 
 
 def threeTabs():
