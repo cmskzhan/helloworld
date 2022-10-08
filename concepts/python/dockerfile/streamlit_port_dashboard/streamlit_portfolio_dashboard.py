@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import ticker_resolution as tr
-import get12dataEODprice as g12
+import getEODprice as g12
 
 def replace_duplicated_ticker(df_in: pd.DataFrame) -> pd.DataFrame:
     """Due to corp events such as SPAC conversion, ticker may change. 
@@ -34,7 +34,9 @@ def openPositionsCosts(df_in: pd.DataFrame) -> pd.DataFrame:
     df_op['Charges'] = df_op['Charges'].apply(pound_format().format)
     symbols_with_position = df_op[df_op['Quantity'] > 0].index.get_level_values('Ticker').tolist()
     us_symbols_with_position = [x for x in symbols_with_position if x.count('.') == 0]
-    df_op['Last Close'] = df_op.index.get_level_values("Ticker").map(g12.getEODprice(us_symbols_with_position)).astype(float)
+    uk_symbols_with_position = [x for x in symbols_with_position if x[-2:] == '.L'] # todo: add more market in other region in future
+    all_symbols_close_price = {**g12.getEODpriceUSA(us_symbols_with_position), **g12.getEODpriceUK(uk_symbols_with_position)}
+    df_op['Last Close'] = df_op.index.get_level_values("Ticker").map(all_symbols_close_price).astype(float)
     df_op['current $ position'] = df_op['Quantity'] * df_op['Last Close']
     column_rename = {'Consideration': '$ invested excl costs', 'Cost/Proceeds': 'ttl £ invested'}
     df_op = df_op.rename(columns=column_rename)    
