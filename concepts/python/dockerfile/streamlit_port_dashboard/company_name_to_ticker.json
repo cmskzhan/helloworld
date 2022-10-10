@@ -9,9 +9,10 @@
     "Activision Blizzard Inc": "ATVI",
     "Zscaler Inc": "ZS",
     "Zoom Video Communications Inc": "ZM",
+    "ANSYS Inc": "ANSS",
+    "MP Materials Corp": "MP",
     "Schroders PLC": "SDR.L",
     "Kopin Corporation": "KOPN",
-    "MP Materials Corp": "MP",
     "PayPoint PLC": "PAY.L",
     "Energy Transfer Equity LP": "ET",
     "Intuitive Surgical Inc": "ISRG",
@@ -20,7 +21,6 @@
     "Veeva Systems Inc": "VEEV",
     "VG Acquisition Corporation (Ord)": "ME",
     "Akamai Technologies Inc": "AKAM",
-    "ANSYS Inc": "ANSS",
     "Infrastructure and Energy Alternatives Inc": "IEA",
     "BlackLine Inc": "BL",
     "Sierra Wireless Inc": "SWIR",
@@ -42,5 +42,6 @@
     "Mosaic Co": "MOS",
     "23ANDME Holding Co": "ME",
     "3M Co (All Sessions)": "MMM",
-    "Tesla Motors Inc (All Sessions)": "TSLA"
+    "Tesla Motors Inc (All Sessions)": "TSLA",
+    "MasTec Inc": "MTZ"
 }

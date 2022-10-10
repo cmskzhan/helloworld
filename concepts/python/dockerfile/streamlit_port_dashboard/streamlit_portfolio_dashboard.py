@@ -23,7 +23,7 @@ def dollar_format():
 def pound_format():
     return "£{:,.2f}"
 
-
+@st.cache
 def openPositionsCosts(df_in: pd.DataFrame) -> pd.DataFrame:
     """Calculate open position and costs for each ticker"""
     df = replace_duplicated_ticker(df_in)
@@ -53,7 +53,7 @@ def threeTabs():
     st.title("My Portfolio")
 
 
-    tab1, tab2, tab3 = st.tabs(["Positions", "Fire", "P&L"])
+    tab1, tab2, tab3 = st.tabs(["Positions", "Macro", "Fire"])
 
     with tab1:
         st.header("Upload Trade/Transaction History")
