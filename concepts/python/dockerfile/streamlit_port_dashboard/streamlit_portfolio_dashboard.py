@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import ticker_resolution as tr
 import getEODprice as g12
+import plotly.graph_objects as go
 
 def replace_duplicated_ticker(df_in: pd.DataFrame) -> pd.DataFrame:
     """Due to corp events such as SPAC conversion, ticker may change. 
@@ -70,12 +71,34 @@ def threeTabs():
 
                     st.subheader("Open positions and costs")
                     with st.spinner("Loading tickers into dataframe, take up to 30 seconds..."):
-                        st.dataframe(openPositionsCosts(df_trade_history).sort_values('Quantity', ascending=False))
+                        df_op = openPositionsCosts(df_trade_history)
+                        st.dataframe(df_op.sort_values('Quantity', ascending=False))
 
                     market_list = df_trade_history['Market'].unique()
                     market = st.selectbox("Select Stock", market_list)
                     st.subheader("Trade history for {}".format(market))
                     st.dataframe(df_trade_history[df_trade_history['Market'] == market])
+                    company_list = df_op.index.get_level_values('Market').tolist()
+                    standout = [0]*len(company_list)
+                    standout[company_list.index(market)] = 0.4
+                    print(standout)
+                    # fig = go.Figure(data = go.pie(
+                    #     labels = df_op.index.get_level_values('Market').tolist(),
+                    #     values = df_op['current position'].str.replace('$', '').str.replace('£', '').astype(float),
+                    #     pull = standout,
+                    #     hovertemplate = '%{label}: %{value:.2f}'))
+                    # fig.update_layout(
+                    #     title = 'Current position',
+                    #     annotations = [dict(text = '£', x = 0.5, y = 0.5, font_size = 20, showarrow = False)],
+                    #     showlegend = False,
+                    #     paper_bgcolor = 'rgba(0,0,0,0)',
+                    #     plot_bgcolor = 'rgba(0,0,0,0)',
+                    #     margin = dict(l = 0, r = 0, t = 0, b = 0))
+                    # fig.update_traces(hoverinfo = 'label+percent', textinfo = 'none', textfont_size = 20, opacity = standout)
+                    # st.plotly_chart(fig)
+
+
+
 
 
                 elif f.name.startswith("Transaction") and f.name.endswith(".csv"):
