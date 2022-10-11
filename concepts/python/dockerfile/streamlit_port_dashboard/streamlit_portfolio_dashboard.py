@@ -39,7 +39,6 @@ def openPositionsCosts(df_in: pd.DataFrame) -> pd.DataFrame:
     df_op['Last Close'] = df_op.index.get_level_values("Ticker").map(all_symbols_close_price).astype(float)
     df_op['current position'] = df_op['Quantity'] * df_op['Last Close']
     df_uk = df_op[df_op.index.get_level_values('Ticker').isin(uk_symbols_with_position)] # format uk symbol use £ sign
-    df_uk['current position'] = df_op['Quantity'] * df_op['Last Close'] / 100
     df_op['current position'] = df_op['current position'].apply(dollar_format().format)
     df_uk['current position'] = df_uk['current position'].apply(pound_format().format)
     df_uk['Consideration'] = df_uk['Consideration'].str.replace('$', '£')
