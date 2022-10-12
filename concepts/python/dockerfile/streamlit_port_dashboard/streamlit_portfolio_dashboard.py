@@ -29,24 +29,13 @@ def openPositionsCosts(df_in: pd.DataFrame) -> pd.DataFrame:
     """Calculate open position and costs for each ticker"""
     df = replace_duplicated_ticker(df_in)
     df_op = df.groupby(['Market','Ticker']).sum()
-    df_op['Consideration'] = df_op['Consideration'].apply(dollar_format().format)
-    df_op['Cost/Proceeds'] = df_op['Cost/Proceeds'].apply(pound_format().format)
-    df_op['Commission'] = df_op['Commission'].apply(pound_format().format)
-    df_op['Charges'] = df_op['Charges'].apply(pound_format().format)
     symbols_with_position = df_op[df_op['Quantity'] > 0].index.get_level_values('Ticker').tolist()
     us_symbols_with_position = [x for x in symbols_with_position if x.count('.') == 0]
     uk_symbols_with_position = [x for x in symbols_with_position if x[-2:] == '.L'] # todo: add more market in other region in future
     all_symbols_close_price = {**g12.getEODpriceUSA(us_symbols_with_position), **g12.getEODpriceUK(uk_symbols_with_position)}
     df_op['Last Close'] = df_op.index.get_level_values("Ticker").map(all_symbols_close_price).astype(float)
     df_op['current position'] = df_op['Quantity'] * df_op['Last Close']
-    df_uk = df_op[df_op.index.get_level_values('Ticker').isin(uk_symbols_with_position)] # format uk symbol use £ sign
-    df_op['current position'] = df_op['current position'].apply(dollar_format().format)
-    df_uk['current position'] = df_uk['current position'].apply(pound_format().format)
-    df_uk['Consideration'] = df_uk['Consideration'].str.replace('$', '£')
-    df_op.update(df_uk)
-    column_rename = {'Consideration': '$ invested excl costs', 'Cost/Proceeds': 'ttl £ invested'}
-    df_op = df_op.rename(columns=column_rename)    
-    return df_op[['Quantity', '$ invested excl costs', 'current position','ttl £ invested', 'Commission','Charges']]
+    return df_op[['Quantity', 'Consideration', 'current position','Cost/Proceeds', 'Commission','Charges']]
 
 
 def threeTabs():
@@ -72,32 +61,35 @@ def threeTabs():
                     st.subheader("Open positions and costs")
                     with st.spinner("Loading tickers into dataframe, take up to 30 seconds..."):
                         df_op = openPositionsCosts(df_trade_history)
-                        st.dataframe(df_op.sort_values('Quantity', ascending=False))
+                        print(df_op)
+                        # format the dataframe for display
+                        df_op_display = df_op.copy()
+                        all_currency_columns = ['Consideration', 'Cost/Proceeds', 'Commission', 'Charges', 'current position']
+                        has_us_columns = ['Consideration', 'current position']
+                        df_op_display[all_currency_columns] = df_op_display[all_currency_columns].applymap(pound_format().format)
+                        us_symbols_with_position = [x for x in df_op.index.get_level_values('Ticker') if x.count('.') == 0]
+                        df_us = df_op_display[df_op_display.index.get_level_values('Ticker').isin(us_symbols_with_position)]
+                        df_us[has_us_columns] = df_us[has_us_columns].applymap(lambda x: x.replace('£', '$'))
+                        df_op_display.update(df_us)
+                        column_rename = {'Consideration': '$ invested excl costs', 'Cost/Proceeds': 'ttl £ invested'}
+                        df_op_display = df_op_display.rename(columns=column_rename)
+                        st.dataframe(df_op_display.sort_values('Quantity', ascending=False))
 
                     market_list = df_trade_history['Market'].unique()
                     market = st.selectbox("Select Stock", market_list)
                     st.subheader("Trade history for {}".format(market))
                     st.dataframe(df_trade_history[df_trade_history['Market'] == market])
+
                     company_list = df_op.index.get_level_values('Market').tolist()
                     standout = [0]*len(company_list)
-                    standout[company_list.index(market)] = 0.4
+                    standout[company_list.index(market)] = 0.5
                     print(standout)
-                    # fig = go.Figure(data = go.pie(
-                    #     labels = df_op.index.get_level_values('Market').tolist(),
-                    #     values = df_op['current position'].str.replace('$', '').str.replace('£', '').astype(float),
-                    #     pull = standout,
-                    #     hovertemplate = '%{label}: %{value:.2f}'))
-                    # fig.update_layout(
-                    #     title = 'Current position',
-                    #     annotations = [dict(text = '£', x = 0.5, y = 0.5, font_size = 20, showarrow = False)],
-                    #     showlegend = False,
-                    #     paper_bgcolor = 'rgba(0,0,0,0)',
-                    #     plot_bgcolor = 'rgba(0,0,0,0)',
-                    #     margin = dict(l = 0, r = 0, t = 0, b = 0))
-                    # fig.update_traces(hoverinfo = 'label+percent', textinfo = 'none', textfont_size = 20, opacity = standout)
-                    # st.plotly_chart(fig)
-
-
+                    fig = go.Figure(data =[go.Pie(
+                        labels = df_op.index.get_level_values('Market'),
+                        values = df_op['current position'],
+                        pull = standout
+                    )])
+                    st.plotly_chart(fig)
 
 
 
