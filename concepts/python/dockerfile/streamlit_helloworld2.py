@@ -1,37 +1,42 @@
-  
-import yfinance as yf
 import streamlit as st
+import pandas as pd
+import plotly.express as px
+import random
 
+st.write("Random number to prove that the app has run: " + str(random.randint(1, 1000)))
 
-st.title("Quick display of a stock, default is MSFT")
-# stockNotWorking = st.sidebar.text_input('Yahoo Symbol:')
-stock = st.sidebar.text_input('Yahoo Symbol:')
+@st.cache
+def skipCompute():
+    # ---- Creating Dictionary ----
+    _dic = { 'Name': ['Mango', 'Apple', 'Banana'],
+            'Quantity': [45, 38, 90]}
+    
+    _df = pd.DataFrame(_dic)
+    st.info('Dataframe created, see 1 time')
+    return _df
 
-# stock = st.sidebar.selectbox('Yahoo Symbol:',('MSFT','AAPL', 'FDS', 'NDAQ', 'T'))
+#load = st.button('Load Data')
+load = st.checkbox('Load Data')
+if load:
+    df = skipCompute()
 
-if not stock:
-  st.warning("no stock detected, use default symbol")
-  stock = "MSFT"
+st.write(df)
+# Initialize session state
+if "load_state" not in st.session_state:
+    st.session_state.load_state = False
 
-
-p = st.sidebar.radio('period:',['1mo','2mo','3mo'])
-
-df=yf.Ticker(stock)
-tickerDf = df.history(period=p, interval='1h')
-
-
-st.write("""
-## SideBars etc
-yfinance package with more refined intervals
-""")
-
-
-st.line_chart(tickerDf[['Open','Close']])
-
-st.write("""
-Volumes 
-""")
-
-st.line_chart(tickerDf.Volume)
-
-st.write(tickerDf)
+if load or st.session_state.load_state:
+   st.session_state.load_state = True
+   
+   
+   # ---- Plot types -------
+   opt = st.radio('Plot type :',['Bar', 'Pie'])
+   if opt == 'Bar':
+      fig = px.bar(df, x= 'Name',
+                   y = 'Quantity',title ='Bar Chart')
+      st.plotly_chart(fig)
+   
+   else:     
+      fig = px.pie(df,names = 'Name',
+                   values = 'Quantity',title ='Pie Chart')
+      st.plotly_chart(fig)
