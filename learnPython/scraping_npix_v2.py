@@ -2,6 +2,7 @@ import re
 import requests
 import sys
 import os
+import html
 
 # scrape links from https://hjd2048.com/2048/thread.php?fid=25 to r"F:\Downloads\samples\scraped" or 
 
@@ -11,6 +12,10 @@ def donwload_images_to_folder(folder: str, result: list):
     total = len(result)
     for i in result:
         extract_url = i.split('"')[1]
+        # if url is html encoded
+        if "&amp;" in extract_url:
+            extract_url = html.unescape(extract_url)
+
     # download image
         response = requests.get(extract_url)
     # save image to folder
