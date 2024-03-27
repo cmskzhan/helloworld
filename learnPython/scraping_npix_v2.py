@@ -12,9 +12,10 @@ def donwload_images_to_folder(folder: str, result: list):
     total = len(result)
     for i in result:
         extract_url = i.split('"')[1]
-        # if url is html encoded
-        if "&amp;" in extract_url:
+        # check if url is html encoded
+        if "&" in extract_url:
             extract_url = html.unescape(extract_url)
+        print(f"Decoded url: {extract_url}")
 
     # download image
         response = requests.get(extract_url)
@@ -52,11 +53,11 @@ else:
             except FileExistsError:
                 print(f"Folder {folder} already exists, probably becasue {url} has been downloaded before, skipping {url}")
                 continue
-
             response = requests.get(url, headers=headers)
             html_str = response.text
             pattern = re.compile(r'src=\"https://.*?\.(?:png|jpg)')
             image_urls = pattern.findall(html_str)
+            
             # if no image found, search for html encoded image url
             if len(image_urls) == 0:
                 pattern = re.compile(r'src=\"https://.*?(?:png|jpg)')
