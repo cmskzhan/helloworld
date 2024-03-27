@@ -57,6 +57,10 @@ else:
             html_str = response.text
             pattern = re.compile(r'src=\"https://.*?\.(?:png|jpg)')
             image_urls = pattern.findall(html_str)
+            # if no image found, search for html encoded image url
+            if len(image_urls) == 0:
+                pattern = re.compile(r'src=\"https://.*?(?:png|jpg)')
+                image_urls = pattern.findall(html_str)
             donwload_images_to_folder(folder, image_urls)
 
         else:
