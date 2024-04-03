@@ -60,7 +60,7 @@ else:
             
             # if no image found, search for html encoded image url
             if len(image_urls) == 0:
-                pattern = re.compile(r'src=\"https://.*?(?:png|jpg)')
+                pattern = re.compile(r'src=\"https://.*?(?:png|jpg)\"')
                 image_urls = pattern.findall(html_str)
             donwload_images_to_folder(folder, image_urls)
 
