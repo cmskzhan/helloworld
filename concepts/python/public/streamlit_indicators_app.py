@@ -157,7 +157,8 @@ def main():
                 
                 # Display raw data
                 st.subheader("📊 Raw Data Preview")
-                st.dataframe(df.head(10))
+                df_show = pd.concat([df.head(4), df.tail(4)])
+                st.dataframe(df_show)
                 
                 # Calculate indicators
                 mfi_period = 14
@@ -213,6 +214,12 @@ def main():
                 )
                 st.plotly_chart(fig1, use_container_width=True)
                 
+                with st.expander("MFI Calculation Formula"):
+                    st.latex(r"TP = \frac{High + Low + Close}{3}")
+                    st.latex(r"RMF = TP \times Volume")
+                    st.latex(r"MFR = \frac{\sum_{14} \text{Positive Money Flow}}{\sum_{14} \text{Negative Money Flow}}")
+                    st.latex(r"MFI = 100 - \frac{100}{1 + MFR}")
+                
                 # Chart 2: Bollinger Bands
                 st.subheader("📊 Bollinger Bands")
                 fig2 = go.Figure()
@@ -240,6 +247,12 @@ def main():
                 )
                 st.plotly_chart(fig2, use_container_width=True)
                 
+                with st.expander("Bollinger Bands Calculation Formula"):
+                    st.latex(r"\text{Middle Band} = \text{SMA}_{20}")
+                    st.latex(r"\text{Upper Band} = \text{Middle Band} + (2 \times \sigma_{20})")
+                    st.latex(r"\text{Lower Band} = \text{Middle Band} - (2 \times \sigma_{20})")
+                    st.write("Where $\sigma$ is the Standard Deviation.")
+                
                 # Chart 3: RSI
                 st.subheader("📈 Relative Strength Index (RSI)")
                 fig3 = go.Figure()
@@ -262,6 +275,10 @@ def main():
                     hovermode="x unified"
                 )
                 st.plotly_chart(fig3, use_container_width=True)
+                
+                with st.expander("RSI Calculation Formula"):
+                    st.latex(r"RS = \frac{\text{Average Gain}}{\text{Average Loss}}")
+                    st.latex(r"RSI = 100 - \frac{100}{1 + RS}")
                 
                 # Display indicator values
                 st.subheader("📋 Technical Indicators Summary")
