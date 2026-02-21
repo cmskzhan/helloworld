@@ -1,0 +1,7 @@
+streamlit
+google-generativeai
+markdown
+python-docx
+pypdf
+xhtml2pdf
+fpdf2
