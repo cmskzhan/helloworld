@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 from docx import Document
 from fpdf import FPDF
 from io import BytesIO
@@ -8,6 +8,7 @@ import re
 import subprocess
 import tempfile
 import os
+from userCVprofiling import load_profile, get_profile_text, PROFILE_PATH
 
 # --- CONFIG ---
 st.set_page_config(page_title="Local AI CV Builder", layout="wide")
@@ -18,22 +19,20 @@ api_key = st.sidebar.text_input("Gemini API Key", type="password")
 
 # --- Model Discovery ---
 available_models = ["gemini-1.5-pro", "gemini-1.5-flash", "gemini-2.0-flash-exp"]
+client = None
 
 if api_key:
     try:
-        genai.configure(api_key=api_key)
-        # Fetch models that support generateContent
-        models = genai.list_models()
-        dynamic_models = [m.name.replace('models/', '') for m in models if 'generateContent' in m.supported_generation_methods]
+        client = genai.Client(api_key=api_key)
+        # Fetch models
+        models = client.models.list()
+        dynamic_models = [m.name for m in models]
         if dynamic_models:
             available_models = dynamic_models
     except Exception as e:
         st.sidebar.error(f"Error fetching models: {e}")
 
 model_name = st.sidebar.selectbox("Select Model", available_models, index=0)
-
-if api_key:
-    model = genai.GenerativeModel(model_name)
 
 # --- PDF GENERATOR CLASS ---
 class CV_PDF(FPDF):
@@ -136,47 +135,81 @@ def create_docx_bytes(text):
 # --- APP UI ---
 st.title("📄 Local AI CV Tailor")
 
+# ── Saved Profile Detection ──────────────────────────────────────────────────
+profile = load_profile()
+has_saved_profile = PROFILE_PATH.exists()
+
+if has_saved_profile:
+    name = profile.get('personal_info', {}).get('full_name', 'your profile')
+    n_jobs = len(profile.get('work_experience', []))
+    n_skills = sum(len(profile.get('skills', {}).get(k, [])) for k in ('technical', 'soft', 'languages', 'certifications'))
+    st.success(
+        f"✅ Saved profile detected — **{name}** "
+        f"({n_jobs} roles, {n_skills} skills). "
+        f"You can generate a CV without uploading files."
+    )
+
 col1, col2 = st.columns([1, 1])
 
 with col1:
     jd = st.text_area("Target Job Description", height=250)
-    uploads = st.file_uploader("Upload Current CVs", type=['pdf', 'docx', 'doc'], accept_multiple_files=True)
+    if has_saved_profile:
+        use_profile = st.checkbox("Use saved profile (user_profile.json)", value=True)
+    else:
+        use_profile = False
+    uploads = st.file_uploader(
+        "Upload Current CVs (optional if profile is saved)",
+        type=['pdf', 'docx', 'doc'],
+        accept_multiple_files=True,
+    )
 
 with col2:
-    st.info("The AI will merge your experience and prioritize skills found in the JD.")
+    if has_saved_profile and use_profile:
+        st.info("Using your saved profile. You can still upload extra CVs to supplement it.")
+    else:
+        st.info("The AI will merge your experience and prioritize skills found in the JD.")
     focus = st.text_input("Special Focus (e.g. 'Focus on Cloud Architecture')")
     generate_btn = st.button("✨ Generate Tailored CV", use_container_width=True)
 
 if generate_btn:
     if not api_key:
         st.error("Please enter API key.")
-    elif not jd or not uploads:
-        st.error("Please provide both a JD and at least one CV.")
+    elif not jd:
+        st.error("Please provide a Job Description.")
+    elif not uploads and not use_profile:
+        st.error("Please provide at least one CV or enable your saved profile.")
     else:
         with st.spinner("Processing documents..."):
-            # Extract Text
+            # Build candidate context from saved profile + any uploads
             context_text = ""
-            for f in uploads:
-                if f.name.endswith('.pdf'):
-                    reader = PdfReader(f)
-                    for page in reader.pages:
-                        context_text += page.extract_text()
-                elif f.name.endswith('.doc'):
-                    # Legacy .doc format – use macOS textutil to extract text
-                    with tempfile.NamedTemporaryFile(suffix='.doc', delete=False) as tmp:
-                        tmp.write(f.read())
-                        tmp_path = tmp.name
-                    try:
-                        txt_path = tmp_path.replace('.doc', '.txt')
-                        subprocess.run(['textutil', '-convert', 'txt', tmp_path, '-output', txt_path], check=True)
-                        with open(txt_path, 'r') as txt_file:
-                            context_text += txt_file.read()
-                        os.unlink(txt_path)
-                    finally:
-                        os.unlink(tmp_path)
-                else:
-                    doc = Document(f)
-                    context_text += "\n".join([p.text for p in doc.paragraphs])
+
+            # 1. Load saved profile text if enabled
+            if use_profile and has_saved_profile:
+                context_text += get_profile_text(profile)
+                context_text += "\n\n"
+
+            # 2. Append text from any uploaded files
+            if uploads:
+                for f in uploads:
+                    if f.name.endswith('.pdf'):
+                        reader = PdfReader(f)
+                        for page in reader.pages:
+                            context_text += page.extract_text()
+                    elif f.name.endswith('.doc'):
+                        with tempfile.NamedTemporaryFile(suffix='.doc', delete=False) as tmp:
+                            tmp.write(f.read())
+                            tmp_path = tmp.name
+                        try:
+                            txt_path = tmp_path.replace('.doc', '.txt')
+                            subprocess.run(['textutil', '-convert', 'txt', tmp_path, '-output', txt_path], check=True)
+                            with open(txt_path, 'r') as txt_file:
+                                context_text += txt_file.read()
+                            os.unlink(txt_path)
+                        finally:
+                            os.unlink(tmp_path)
+                    else:
+                        doc = Document(f)
+                        context_text += "\n".join([p.text for p in doc.paragraphs])
             
             prompt = f"""
             You are an expert CV writer. Create a professional CV in Markdown.
@@ -194,7 +227,10 @@ if generate_btn:
             - Ensure bullet points are achievement-oriented.
             """
             
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt
+            )
             st.session_state['cv_md'] = response.text
 
 # --- RESULTS & EXPORT ---

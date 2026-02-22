@@ -11,17 +11,36 @@
   },
   "work_experience": [
     {
-      "company": "NASDAQ Int’l, Market Technology",
+      "company": "Vanguard, International Systems and technologies",
+      "job_title": "Principal Site Reliability Engineer",
+      "start_date": "Jan 2021",
+      "end_date": "Present",
+      "responsibilities": [
+        "Design and create tools for availability and latency detection to minimize MTTD and MTTR for Vanguard applications running on AWS.",
+        "Onboard and support new mission critical products to IST Run team and setup relevant SLO, SLI.",
+        "Troubleshooting and debugging application running on Linux. Investigate exceptions and stack traces in log aggregation tools.",
+        "Investigate CDN, network issue on TCP/IP stacks and websockets with DevOpSec team.",
+        "Perform data integrity and data reconciliation by developing python script to query dynamoDB and api/graphql backend, monitoring SSL certs expiration.",
+        "Produce python script for automation and toil elimination.",
+        "Supervise and script performance tests against restAPI and GraphQL in Locust.",
+        "Chair forums for developers to improve DX and self service portals.",
+        "Provide reports on incident trends and self-healing event ratio.",
+        "Recruit and interview junior members of the IST RUN global team (UK, Australia, US).",
+        "Validate DOCKERFILE and investigate container logs for incident analysis."
+      ]
+    },
+    {
+      "company": "NASDAQ Int'l, Market Technology",
       "job_title": "Senior System Specialist, Smarts Market Surveillance and Buyside Sybenetix technologies",
-      "start_date": "",
-      "end_date": "",
+      "start_date": "Feb 2016",
+      "end_date": "Jan 2021",
       "responsibilities": [
         "Devops: Introduce Smarts CI/CD tools to buyside surveillance platform. Develop and update puppet modules, manifests and hiera to manage server build, system deployment and configuration control.",
+        "Application Support: Support Nasdaq buyside survelliance software in a hybrid linux and windows platform running docker containers. Support both Nasdaq associated exchanges' and regulators' smarts market surveillance software.",
+        "Database Admin: Design and build a Postgresql database cluster that conform with NASDAQ inforsec standard. Investigate Data issues with business analysts through querying and updating psql database.",
         "Act as deputy Technical Operation Manager. Manage incidents, problems, changes and releases. Bring integrated production to SOC2 Complaint.",
-        "Application Support: Support Nasdaq buyside survelliance software in a hybrid linux and windows platform running docker containers.",
-        "Support both Nasdaq associated exchanges’ and regulators’ smarts market surveillance software. Technical Lead for various projects.",
-        "Database Admin: Design and build a Postgresql database cluster that conform with NASDAQ inforsec standard.",
-        "Investigate Data issues with business analysts through querying and updating psql database."
+        "Design and Implement an on-prem multi-master k8s cluster.",
+        "Technical Lead for various projects."
       ]
     },
     {
@@ -39,28 +58,32 @@
     },
     {
       "company": "Fidessa PLC, Core Development Unit",
-      "job_title": "Product specialist and Test Support Analyst, sell-side",
+      "job_title": "Product Specialist and Test Support Analyst, sell-side",
       "start_date": "Dec 2011",
       "end_date": "Sep 2013",
       "responsibilities": [
-        "Test and demo environments support: Provide a stable and highly available test and demo environment for testers and marketing demonstrators.",
-        "Install and configure the backend of Fidessa sell side products known as hosted Integrated Trading Platform (ITP /ETP ) and following components: Order, Trade and Position Management And Reporting front office system (OMAR, TMAR and PMAC), European Multi-Market Access (EMMA), Client Trading Allocation Control (CTAC) middle office system, Fidessa Data Administrator (FDA) and Sybase, Fidessa Advanced Trading Tools; Basket Execution and Management (BEAM), BLUEBOX (Algorithm Trading) and PAIR.",
+        "Test and demo environments support: Provide a stable and highly available test, staging and demo environment for testers and marketing demonstrators.",
+        "Install and configure the backend of Fidessa sell side products known as hosted Integrated Trading Platform (ITP/ETP) and components (OMAR, TMAR, PMAC, EMMA, CTAC, FDA).",
         "ITP software release and installation: Release software from developers to software library and resource centre. Script and automate part of software release flow using Bourne and C shell. Install and maintain latest release candidates using Perforce.",
-        "Exchange connectivity and broker network setup configure and maintenance: Configure exchange interactive gateway/service on Fidessa backend systems running on Solaris and Linux. Update FIX simulator, FIX portal and configure FIX connections to express hub, a broker network. Enable user market routes to permit different levels of market data access."
+        "Exchange connectivity and broker network setup: Configure exchange interactive gateway/service on Fidessa backend systems running on Solaris and Linux.",
+        "Update FIX simulator, FIX portal and configure FIX connections to express hub, a broker network.",
+        "Enable user market routes to permit different levels of market data access."
       ]
     },
     {
       "company": "Thomson Reuters, Markets Desktop Platform",
-      "job_title": "Common Platform Implementation and Support Specialist / Team leader, Leader software engineer in GRF",
+      "job_title": "Common Platform Implementation and Support Specialist / Team Leader",
       "start_date": "Jul 2008",
       "end_date": "Dec 2011",
       "responsibilities": [
-        "Cross Platform Support: Look after the whole integration and QA environments which are physically hosted in UK, Singapore and US. Provide day to day 3rd line support on various technical issues arise on Common Platform. Schedule, coordinate and support software release cycles.",
-        "Reuters Eikon pillar software implementation and support: Follow the Reuters Proposition Delivery breaking the work into six key pillars (Hosted RMDS, Search, AAA DACS, etc.) of the Common Platform. Build the six key pillars into a working platform for the integration testing phase of Common Platform.",
-        "Coordinate with the pillar development, QA groups and Operations at a technical level. Help the integration system users understand the system in terms of how to deliver and debug their applications.",
-        "Work with the CP pillars, architects, shared infrastructure and Operations on technical requirements and design, documentation, implementation, project management, release processes and product support. Generate and provide jumpstart configuration and help Operations to deploy it across live production environments. Support relevant issues arise.",
-        "Process creation and co-ordination: Assist management of day to day co-ordination between team members in APAC and AMERS. Create OS patching process with IBM bigfix products. Create AV update processes with McAfee ePolicy Orchestrator. Work with GMI team to implement processes. Responsible for VeriSign SSL certificate renewal.",
-        "Software Installation Automation: Automate server installation and software deployment from bare metal PXE boot. Automate processes and tasks."
+        "Cross Platform Support: Look after the whole integration and QA environments hosted in UK, Singapore and US. Provide day to day 3rd line support. Schedule, coordinate and support software release cycles.",
+        "Reuters Eikon pillar software implementation and support: Follow the Reuters Proposition Delivery breaking the work into six key pillars (Hosted RMDS, Search, AAA DACS, etc.). Build the six key pillars into a working platform for the integration testing phase.",
+        "Coordinate with the pillar development, QA groups and Operations at a technical level. Help integration system users understand the system to deliver and debug their applications.",
+        "Work with the CP pillars, architects, shared infrastructure and Operations on technical requirements, design, documentation, implementation, project management, and release processes.",
+        "Generate and provide jumpstart configuration and help Operations to deploy it across live production environments.",
+        "Process creation and co-ordination: Assist management of day to day co-ordination between team members in APAC and AMERS.",
+        "Create OS patching process with IBM BigFix and AV update processes with McAfee ePolicy Orchestrator.",
+        "Software Installation Automation: Automate server installation and software deployment from bare metal PXE boot."
       ]
     },
     {
@@ -72,217 +95,7 @@
         "Real-time Systems support: Analyse FIX messages and logs for troubleshooting. Plan, install, monitor and support of a real-time global financial data and trading system.",
         "Manage incidents on real time data and trading products such as RSP services to various trading counterparts.",
         "Market Data Feed support: Application support to Thomson Financial market data feed software and global data distribution.",
-        "Sever and Network installation and support: Network and Server Infrastructure Engineer."
-      ]
-    },
-    {
-      "company": "NASDAQ Int'l, Market Technology",
-      "position": "Senior System Specialist, Smarts Market Surveillance and Buyside Sybenetix technologies",
-      "start_date": "",
-      "end_date": "",
-      "responsibilities": [
-        "Design and Implement an on-prem multi-master k8s cluster",
-        "Introduce Smarts CI/CD tools to buyside surveillance platform.",
-        "Develop and update puppet modules, manifests and hiera to manage server build, system deployment and configuration control.",
-        "Act as deputy Technical Operation Manager. Manage incidents, problems, changes and releases. Bring integrated production to SOC2 Complaint.",
-        "Support Nasdaq buyside survelliance software in a hybrid linux and windows platform running docker containers.",
-        "Support both Nasdaq associated exchanges' and regulators' smarts market surveillance software.",
-        "Technical Lead for various projects",
-        "Design and build a Postgresql database cluster that conform with NASDAQ inforsec standard",
-        "Investigate Data issues with business analysts through querying and updating psql database"
-      ]
-    },
-    {
-      "company": "Fidessa PLC, Hosted Exchange and Ticker Plant Division",
-      "position": "Technical Service Delivery Engineer",
-      "start_date": "Oct 2013",
-      "end_date": "Feb 2016",
-      "responsibilities": [
-        "Integrate regional configuration for European based Ticker Plant Systems on Unix/Linux platforms",
-        "Shell script tasks for weekend production software rollout.",
-        "Technical lead for client on-boarding projects and owner of client change requests",
-        "End to end network testing, connectivity verification and ACL, NAT troubleshooting"
-      ]
-    },
-    {
-      "company": "Fidessa PLC, Core Development Unit",
-      "position": "Product specialist and Test Support Analyst, sell-side",
-      "start_date": "Dec 2011",
-      "end_date": "Sep 2013",
-      "responsibilities": [
-        "Provide stable and highly available test, staging and demo environments",
-        "Install and configure the backend of Fidessa sell side products known as hosted Integrated Trading Platform (ITP/ETP)",
-        "Script and automate part of software release flow using Bourne and C shell.",
-        "Install and maintain latest release candidates using Perforce.",
-        "Configure exchange interactive gateway/service on Fidessa backend systems",
-        "Update FIX simulator, FIX portal and configure FIX connections to express hub, a broker network",
-        "Enable user market routes to permit different levels of market data access"
-      ]
-    },
-    {
-      "company": "Thomson Reuters, Markets Desktop Platform",
-      "position": "Common Platform Implementation and Support Specialist / Team leader, Leader software engineer in GRF",
-      "start_date": "Jul 2008",
-      "end_date": "Dec 2011",
-      "responsibilities": [
-        "Look after integration and QA environments. Provide 3rd line support",
-        "Schedule, coordinate and support software release cycles.",
-        "Automate server installation and software deployment from bare metal PXE boot."
-      ]
-    },
-    {
-      "company": "Thomson Financial, Global Technology Infrastructure",
-      "position": "Real Time System Engineer",
-      "start_date": "Oct 2004",
-      "end_date": "Jun 2008",
-      "responsibilities": [
-        "Analyse FIX messages and logs for troubleshooting",
-        "Plan, install, monitor and support of a real-time global financial data and trading system.",
-        "Application support to Thomson Financial market data feed software and global data distribution",
-        "Network and Server Infrastructure Engineering"
-      ]
-    },
-    {
-      "company": "NASDAQ Int’l, Market Technology",
-      "title": "Senior System Specialist, Smarts Market Surveillance and Buyside Sybenetix technologies",
-      "start_date": "",
-      "end_date": "",
-      "description": " Implementation Specialist and Devops: Implement NASDAQ Smarts CI/CD tools to buyside surveillance platform. Act as deputy Technical Implementation and Operation Manager. Manage incidents, problems, changes and releases. Bring integrated production to SOC2 Complaint. Develop and update puppet modules, manifests and hiera to manage server build, system deployment and configuration control.  Application Support: Support Nasdaq buyside survelliance software in a hybrid linux and windows platform running docker containers. Support both Nasdaq associated exchanges’ and regulators’ smarts market surveillance software.  Database Admin: Technical Lead of a Postgresql database cluster build up project"
-    },
-    {
-      "company": "Thomson Financial, Global Technology Infrastructure",
-      "job_title": "Real Time System Engineer",
-      "start_date": "Oct 2004",
-      "end_date": "Jun 2008",
-      "responsibilities": [
-        "Analyse FIX messages and logs for troubleshooting.",
-        "Plan, install, monitor and support of a real-time global financial data and trading system.",
-        "Manage incidents on real time data and trading products such as RSP services to various trading counterparts.",
-        "Application support to Thomson Financial market data feed software and global data distribution.",
-        "Network and Server Infrastructure Engineering."
-      ]
-    },
-    {
-      "company": "Vanguard, International Systems and technologies",
-      "role": "Site Reliability Engineer",
-      "start_date": "Jan 2021",
-      "end_date": "Present",
-      "responsibilities": [
-        "Recruit and interview junior members of the IST RUN team",
-        "Work with production support to minimize MTTD and MTTR",
-        "Troubleshooting and debugging application running on Linux. Investigate exceptions and stack traces in log aggregation tools.",
-        "Create python script to perform data integrity and data reconciliation by querying dynamoDB and api/graphql backend, monitoring SSL certs expiration.",
-        "Investigate CDN, network issue on TCP/IP stacks and websockets.",
-        "Performance testing restAPI and GraphQL in python",
-        "Provide reports on incident trends and self-healing event ratio"
-      ]
-    },
-    {
-      "company": "Vanguard, International Systems and technologies",
-      "job_title": "Site Reliability Engineer",
-      "start_date": "Jan 2021",
-      "end_date": "Present",
-      "responsibilities": [
-        "Onboard and support new mission critical products to IST Run team and setup relevant SLO, SLI",
-        "Troubleshooting and debugging application running on Linux. Investigate exceptions and stack traces.",
-        "Perform data integrity and data reconciliation by developing python script to query dynamoDB and api/graphql backend",
-        "Work with DevOpSec team to investigate CDN, network issue on TCP/IP stacks and websockets.",
-        "Provide reports on incident trends and self-healing event ratio"
-      ]
-    },
-    {
-      "company": "NASDAQ Int'l, Market Technology",
-      "job_title": "Senior System Specialist, Smarts Market Surveillance and Buyside Sybenetix technologies",
-      "start_date": "Feb 2016",
-      "end_date": "Jan 2021",
-      "responsibilities": [
-        "Application Support: Support Nasdaq buyside survelliance software in a hybrid linux and windows platform running docker containers. Support both Nasdaq associated exchanges' and regulators' smarts market surveillance software. Technical Lead for various projects",
-        "Devops: Introduce Smarts CI/CD tools to buyside surveillance platform. Develop and update puppet modules, manifests and hiera to manage server build, system deployment and configuration control. Act as deputy Technical Operation Manager. Manage incidents, problems, changes and releases. Bring integrated production to SOC2 Complaint.",
-        "Database Admin: Design and build a Postgresql database cluster that conform with NASDAQ inforsec standard. Investigate Data issues with business analysts through querying and updating psql database"
-      ]
-    },
-    {
-      "company": "Thomson Reuters, Markets Desktop Platform",
-      "job_title": "Common Platform Implementation and Support Specialist, Team leader, Leader software engineer in GRF",
-      "start_date": "Jul 2008",
-      "end_date": "Dec 2011",
-      "responsibilities": [
-        "Cross Platform Support: Provide day to day 3rd line support on Common Platform. Schedule, coordinate and support software release cycles.",
-        "Reuters Eikon pillar software implementation and support: Follow the Reuters Proposition Delivery breaking the work into six key pillars (Hosted RMDS, Search, AAA DACS, etc.) of the Common Platform. Build the six key pillars into a working platform for the integration testing phase of Common Platform.",
-        "Software Installation Automation: Automate server installation and software deployment from bare metal PXE boot."
-      ]
-    },
-    {
-      "company": "Vanguard, International Systems and technologies",
-      "job_title": "Lead Site Reliability Engineer",
-      "start_date": "Jan 2021",
-      "end_date": "Present",
-      "responsibilities": [
-        "Validate DOCKERFILE and investigate container logs for incident analysis",
-        "Produce python script for automation and toil elimination",
-        "Troubleshooting and debugging application running on Linux. Investigate exceptions and stack traces in log aggregation tools.",
-        "Script performance tests against restAPI and GraphQL in Locust",
-        "Provide reports on incident trends and self-healing event ratio",
-        "Recruit and interview junior members of the IST RUN team"
-      ]
-    },
-    {
-      "company": "Thomson Reuters, Markets Desktop Platform, Common Platform Implementation and Support Specialist",
-      "job_title": "Team leader, Leader software engineer in GRF",
-      "start_date": "Jul 2008",
-      "end_date": "Dec 2011",
-      "responsibilities": [
-        "Cross Platform Support: Provide day to day 3rd line support on Common Platform. Schedule, coordinate and support software release cycles",
-        "Reuters Eikon pillar software implementation and support: Follow the Reuters Proposition Delivery breaking the work into six key pillars (Hosted RMDS, Search, AAA DACS, etc.) of the Common Platform. Build the six key pillars into a working platform for the integration testing phase of Common Platform",
-        "Software Installation Automation: Automate server installation and software deployment from bare metal PXE boot"
-      ]
-    },
-    {
-      "company": "Fidessa PLC, Core Development Unit",
-      "job_title": "Product Delivery Specialist, sell-side",
-      "start_date": "",
-      "end_date": "",
-      "responsibilities": [
-        "Setup exchange connectivity and broker network",
-        "Manage new exchange interactive gateway/service on Fidessa backend systems to meet new customer needs and deliver data solution for research and development teams",
-        "Maintain FIX simulator, FIX portal and configure FIX connections to express hub, a broker network"
-      ]
-    },
-    {
-      "company": "Thomson Reuters, Markets Desktop Platform, Common Platform",
-      "job_title": "Implementation and Support Specialist Team leader, Leader software engineer in GRF",
-      "start_date": "",
-      "end_date": "",
-      "responsibilities": [
-        "Cross Platform Support Provide day to day 3rd line support on Common Platform.",
-        "Schedule, coordinate and support software release cycles.",
-        "Reuters Eikon pillar software implementation and support Follow the Reuters Proposition Delivery breaking the work into six key pillars (Hosted RMDS, Search, AAA DACS, etc.) of the Common Platform.",
-        "Build the six key pillars into a working platform for the integration testing phase of Common Platform."
-      ]
-    },
-    {
-      "company": "Vanguard, International Systems and technologies",
-      "job_title": "Principal Site Reliability Engineer",
-      "start_date": "Jan 2021",
-      "end_date": "Present",
-      "responsibilities": [
-        "Design and create tools for availability and latency detection to minimize MTTD and MTTR for Vanguard applications running on AWS",
-        "Supervise performance tests against restAPI and GraphQL in Locust",
-        "Chair forums for developers to improve DX and self service portals",
-        "In major incident, troubleshooting and debugging application running on Linux. Investigate exceptions and stack traces in log aggregation tools.",
-        "Provide reports on incident trends and self-healing event ratio",
-        "Recruit and interview junior members of the IST RUN global team (UK, Australia, US)"
-      ]
-    },
-    {
-      "company": "Thomson Reuters, Markets Desktop Platform, Common Platform",
-      "position": "Implementation and Support Specialist, Team leader, Leader software engineer in GRF",
-      "start_date": "Jul 2008",
-      "end_date": "Dec 2011",
-      "responsibilities": [
-        "Cross Platform Support Provide day to day 3rd line support on Common Platform. Schedule, coordinate and support software release cycles.",
-        "Reuters Eikon pillar software implementation and support Follow the Reuters Proposition Delivery breaking the work into six key pillars (Hosted RMDS, Search, AAA DACS, etc.) of the Common Platform. Build the six key pillars into a working platform for the integration testing phase of Common Platform.",
-        "Software Installation Automation Automate server installation and software deployment from bare metal PXE boot."
+        "Network and Server Infrastructure Engineering: Server and Network installation and support."
       ]
     }
   ],
@@ -292,180 +105,172 @@
       "institution": "University of Manchester",
       "start_date": "2002",
       "end_date": "2003",
-      "details": "Research: Joint Direction of Arrival and Delay Estimation for Spatio - Temporal Smart Antennas in CDMA. Supervisor: Stephen Barton and Fumie Coston"
+      "details": "Research: Joint Direction of Arrival and Delay Estimation for Spatio-Temporal Smart Antennas in CDMA. Supervisor: Stephen Barton and Fumie Coston"
     },
     {
-      "degree": "MSc computing and information technology",
+      "degree": "MSc Computing and Information Technology",
       "institution": "Liverpool John Moores University",
       "start_date": "2000",
-      "end_date": "2001"
+      "end_date": "2001",
+      "details": ""
     },
     {
       "degree": "B.Eng. Electrical Engineering",
       "institution": "Shanghai University",
       "start_date": "1994",
-      "end_date": "1998"
-    },
-    {
-      "institution": "University of Manchester",
-      "degree": "MPhil",
-      "field_of_study": "Computer Science",
-      "start_date": "",
-      "end_date": "",
-      "details": "Research: Joint Direction of Arrival and Delay Estimation for Spatio-Temporal Smart Antennas in CDMA. Supervisor: Stephen Barton and Fumie Coston"
-    },
-    {
-      "institution": "Liverpool John Moores University",
-      "degree": "MSc",
-      "field_of_study": "Computing and Information Technology",
-      "start_date": "",
-      "end_date": "",
-      "details": ""
-    },
-    {
-      "institution": "Shanghai University",
-      "degree": "B.Eng.",
-      "field_of_study": "Electrical Engineering",
-      "start_date": "",
-      "end_date": "",
+      "end_date": "1998",
       "details": ""
     }
   ],
   "skills": {
     "technical": [
-      "DevOps",
-      "CI/CD",
-      "Puppet",
-      "Hiera",
-      "Docker",
-      "Linux",
-      "Windows",
-      "PostgreSQL",
-      "Unix",
-      "Shell Scripting (Bourne, C shell)",
-      "Sybase",
-      "Solaris",
-      "Perforce",
-      "FIX Protocol",
-      "IBM BigFix",
-      "McAfee ePolicy Orchestrator",
-      "PXE boot",
-      "Networking (ACL, NAT)",
-      "git",
-      "bitbucket",
-      "teamcity",
-      "Jenkins",
-      "k8s",
-      "SQL",
-      "Python",
-      "Java",
-      "RestAPI",
-      "FIX gateways",
-      "Unix/Linux platforms",
-      "NASDAQ Smarts",
-      "Fidessa trading platforms",
-      "Thomson Reuters Eikon",
-      "Bourne shell",
-      "C shell",
-      "market data systems",
-      "Kubernetes Multi-Master Cluster",
-      "kubernetes",
-      "puppet modules, manifests, hiera",
-      "Integrated Trading Platform (ITP/ETP)",
-      "Shell Scripting",
-      "Unix/Linux",
-      "Bash scripting",
-      "RHEL",
-      "Splunk",
+      "AAA DACS",
       "API",
       "AWS",
-      "microservice technologies",
-      "RHEL Admin",
-      "VMWARE virtualisation",
-      "TCP/IP",
-      "HSRP",
-      "CMDB PUPPET",
-      "Kubernetes microservice technologies",
-      "Python Data Engineerig",
-      "Plotly",
-      "Streamlit",
-      "SQL RMDB",
-      "git version control",
-      "GraphQL",
-      "Locust",
-      "Terraform",
-      "Open telemetry",
-      "IaaS",
-      "AWS S3",
       "AWS Athena",
-      "Glue",
-      "EMR",
-      "Redshift",
-      "Kinesis",
+      "AWS EMR",
+      "AWS Glue",
+      "AWS Kinesis",
+      "AWS Redshift",
+      "AWS S3",
+      "Bamboo",
+      "Bare metal PXE boot",
+      "Bitbucket",
+      "CDMA",
+      "CI/CD",
+      "Cloud Composer (Airflow)",
+      "Cloud Ru",
+      "Cloudformation",
       "Cloudwatch",
       "CodePipeline",
+      "Data Engineering",
+      "DevOps",
+      "Docker",
+      "DynamoDB",
+      "FIX Protocol",
+      "Fidessa Trading Platform",
       "GCS",
-      "Cloud Composer(Air flow)",
-      "Cloud Ru",
-      "CI/CD tools",
-      "open telemetry SDK and collector",
-      "Prometheus",
+      "Git",
       "Grafana",
+      "GraphQL",
+      "HSRP",
+      "Hiera",
+      "Honeycomb",
+      "Hosted RMDS",
+      "IBM BigFix",
+      "IaaS",
+      "Integrated Trading Platform (ITP/ETP)",
+      "Java",
+      "Jenkins",
+      "Kubernetes",
+      "Linux",
+      "Locust",
       "Loki",
-      "Tempo"
+      "McAfee ePolicy Orchestrator",
+      "NASDAQ Smarts",
+      "Networking (ACL, NAT, TCP/IP)",
+      "OpenTelemetry",
+      "Perforce",
+      "Plotly",
+      "PostgreSQL",
+      "Prometheus",
+      "Puppet",
+      "Python",
+      "RHEL",
+      "RestAPI",
+      "SQL",
+      "Shell Scripting (Bourne, C, Bash)",
+      "Solaris",
+      "Spatio-Temporal Smart Antennas",
+      "Splunk",
+      "Streamlit",
+      "Sybase",
+      "TeamCity",
+      "Tempo",
+      "Terraform",
+      "Thomson Reuters Eikon",
+      "VMware Virtualisation",
+      "Websockets",
+      "Windows"
     ],
     "soft": [
-      "Technical Leadership",
-      "Incident Management",
-      "Problem Management",
-      "Change Management",
-      "Release Management",
-      "Client Onboarding",
-      "Troubleshooting",
-      "Project Coordination",
-      "Team leadership",
-      "Technical lead",
-      "Client On-boarding",
-      "Project Management",
-      "DevOps",
       "Application Support",
-      "Database Administration",
       "Business Continuity Planning",
-      "Mentoring",
-      "Problem Solving",
-      "Leadership",
-      "Recruiting",
-      "Interviewing",
-      "Team Management",
+      "Change Management",
+      "Client Onboarding",
+      "Client Support",
+      "Coaching",
+      "Communication",
       "Cross-functional Collaboration",
+      "Database Administration",
+      "Incident Management",
+      "Interviewing",
+      "Leadership",
+      "Management",
+      "Mentoring",
+      "Problem Management",
+      "Problem Solving",
+      "Project Coordination",
+      "Project Management",
+      "Recruitment",
+      "Release Management",
+      "Reporting and Metrics Creation",
       "Stress Testing Algorithm Formulation",
-      "Reporting and Metrics Creation"
+      "Team Leadership",
+      "Team Management",
+      "Technical Leadership",
+      "Troubleshooting"
     ],
     "languages": [],
     "certifications": [
+      "AWS Solution Architecture - Associate",
       "Certified Kubernetes Administrator (CKA)",
-      "Certified RedHat System Administrator (RHCSA)",
       "Certified Kubernetes Application Developer (CKAD)",
-      "AWS solution architecture - associate",
-      "Certified RedHat Linux System Admin"
+      "Certified RedHat System Administrator (RHCSA)"
     ]
   },
   "projects": [
     {
-      "title": "Python project",
-      "url": "https://colab.research.google.com/drive/1o8bHWUvp5qXASGCGtA3-kJThcdhN1oLj?usp=sharing",
-      "description": ""
+      "name": "Python Project",
+      "description": "Python project hosted on Google Colab.",
+      "technologies": [
+        "Python"
+      ],
+      "url": "https://colab.research.google.com/drive/1o8bHWUvp5qXASGCGtA3-kJThcdhN1oLj?usp=sharing"
+    },
+    {
+      "name": "Postgresql Database Cluster Build",
+      "description": "Technical Lead of a Postgresql database cluster build up project conforming with NASDAQ infosec standards.",
+      "technologies": [
+        "PostgreSQL"
+      ],
+      "url": ""
+    },
+    {
+      "name": "Research: Spatio-Temporal Smart Antennas in CDMA",
+      "description": "Joint Direction of Arrival and Delay Estimation for Spatio-Temporal Smart Antennas in CDMA. Research conducted during MPhil Computer Science at University of Manchester.",
+      "technologies": [
+        "CDMA",
+        "Smart Antennas"
+      ],
+      "url": ""
     }
   ],
   "publications": [],
   "awards": [
-    "EPSRC research sponsorship",
-    "Full scholarship from Liverpool John Moores University",
-    "EPSRC (Engineering and Physical Sciences Research Council) research sponsorship",
-    "Full studentship from Liverpool John Moores University"
+    {
+      "title": "Full studentship",
+      "date": "",
+      "issuer": "Liverpool John Moores University"
+    },
+    {
+      "title": "EPSRC (Engineering and Physical Sciences Research Council) research sponsorship",
+      "date": "",
+      "issuer": "EPSRC"
+    }
   ],
   "metadata": {
-    "last_updated": "2026-02-21T20:46:11.285178+00:00",
+    "last_updated": "2026-02-22T00:15:15.389777+00:00",
     "source_files": [
       "CV-2019.md",
       "CV-2020-k8s.md",
@@ -481,7 +286,22 @@
       "CV-2024-SRE-BAM.md",
       "CV-2024-TL.md",
       "CV-2025-SRE-IMC.md",
-      "CV-2026-SRE-Manager-Apple.md"
+      "CV-2026-SRE-Manager-Apple.md",
+      "CV-2020-DB.md",
+      "CV-2020-imp.md",
+      "CV-2020.md",
+      "CV-2022-Sup.md",
+      "CV-2023-SRE-apple.md",
+      "CV-2023-SRE-drw.md",
+      "CV-2023-Trading Ops PRE-jump trading.md",
+      "CV-2024-SRE.md",
+      "CV-2025-DataIntegrationSpecialist-NASDAQ.md",
+      "CV-2025-Platform.md",
+      "CV-2025-SRE-xAI.md",
+      "CV-2025-google-SRE.md",
+      "CV-2026-Devops.md",
+      "CV-2026-SRE-Core-Date-Svc-Balyasny.md",
+      "CV-2026-blackstone-sre-data-cloud-dx.md"
     ]
   }
 }

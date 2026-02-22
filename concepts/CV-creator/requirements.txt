@@ -1,7 +1,6 @@
 streamlit
-google-generativeai
+google-genai
 markdown
 python-docx
 pypdf
-xhtml2pdf
 fpdf2
