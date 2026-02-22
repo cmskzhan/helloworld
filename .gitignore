@@ -13,3 +13,8 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# CV-creator
+.DS_Store
+concepts/CV-creator/trainingData/*.md
+concepts/CV-creator/__pycache__/*

@@ -1,0 +1,10 @@
+__pycache__
+*.pyc
+.DS_Store
+trainingData/
+*.md
+docker-compose.yaml
+Dockerfile.*
+nginx.conf
+.git
+.gitignore
