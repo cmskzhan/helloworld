@@ -2,9 +2,9 @@
   "personal_info": {
     "full_name": "Kai Zhang",
     "email": "kaizhang@hotmail.com",
-    "phone": "+44-07785628582",
+    "phone": "+44-07460959753",
     "location": "11 Fenns way, Woking, Surrey GU21 4BJ",
-    "linkedin": "",
+    "linkedin": "https://www.linkedin.com/in/kai-zhang-93488414/",
     "github": "",
     "website": "",
     "summary": ""
@@ -26,7 +26,8 @@
         "Chair forums for developers to improve DX and self service portals.",
         "Provide reports on incident trends and self-healing event ratio.",
         "Recruit and interview junior members of the IST RUN global team (UK, Australia, US).",
-        "Validate DOCKERFILE and investigate container logs for incident analysis."
+        "Validate DOCKERFILE and investigate container logs for incident analysis.",
+        "Lead multi-region and multi-availability zone DR tests projects."
       ]
     },
     {
