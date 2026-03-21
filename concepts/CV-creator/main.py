@@ -52,11 +52,15 @@ def get_models(req: ModelRequest):
     if not req.api_key:
         raise HTTPException(status_code=400, detail="API Key required")
     try:
+        logger.info("Fetching models from Google GenAI API")
         client = genai.Client(api_key=req.api_key)
         models = client.models.list()
-        dynamic = [m.name for m in models]
+        # Sort so pro/flash are first
+        dynamic = sorted([m.name for m in models], 
+                        key=lambda x: ("flash" in x.lower() or "pro" in x.lower()), 
+                        reverse=True)
         if dynamic:
-            dynamic.sort(key=lambda x: ("flash" in x.lower() or "pro" in x.lower()), reverse=True)
+            logger.info(f"Discovered {len(dynamic)} models")
             return {"models": dynamic}
         return {"models": ["gemini-1.5-pro", "gemini-1.5-flash", "gemini-2.0-flash-exp"]}
     except Exception as e:

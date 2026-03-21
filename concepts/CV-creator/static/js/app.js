@@ -6,7 +6,49 @@ function showToast(msg, type="info") {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+async function updateModelList() {
+    const apiKey = document.getElementById('api-key').value;
+    const select = document.getElementById('model-name');
+    if (!apiKey || apiKey.length < 10) return;
+
+    try {
+        const res = await fetch('/api/models', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ api_key: apiKey })
+        });
+        if (res.ok) {
+            const data = await res.json();
+            const currentVal = select.value;
+            select.innerHTML = '';
+            data.models.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                if (m === currentVal) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+    } catch (e) {
+        console.error("Failed to load models", e);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+    document.getElementById('api-key').addEventListener('input', debounce(updateModelList, 1000));
+    // ... rest of init
     // Check if profile exists
     try {
         const res = await fetch('/api/profile');
