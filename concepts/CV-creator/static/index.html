@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Local AI CV Tailor</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>📄 AI CV Tailor</h1>
+      <nav>
+        <a href="index.html" class="active">Tailor CV</a>
+        <a href="profile.html">Profile Manager</a>
+      </nav>
+    </header>
+
+    <div class="glass-panel">
+      <h2>API Settings</h2>
+      <div class="grid">
+        <div class="form-group">
+          <label for="api-key">Gemini API Key</label>
+          <input type="password" id="api-key" placeholder="Enter API Key" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="model-name">Select Model</label>
+          <select id="model-name">
+            <option value="gemini-3.1-pro">gemini-3.1-pro</option>
+            <option value="gemini-3.1-flash">gemini-3.1-flash</option>
+            <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+            <option value="gemini-2.0-flash-exp">gemini-2.0-flash-exp</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-panel" id="profile-status" style="display: none;">
+      <h3 style="margin-bottom:0.5rem">✅ Saved Profile Detected</h3>
+      <p style="color:var(--text-secondary); margin-bottom:1rem;" id="profile-status-text">
+        You can generate a CV without uploading files.
+      </p>
+    </div>
+
+    <div class="grid">
+      <div class="glass-panel">
+        <h2>Input Context</h2>
+        
+        <div class="form-group">
+          <label for="jd">Target Job Description (JD)</label>
+          <textarea id="jd" rows="8" placeholder="Paste the job description here..."></textarea>
+        </div>
+        
+        <div class="form-group" id="use-profile-wrapper" style="display:none;">
+          <label>
+            <input type="checkbox" id="use-profile" checked> 
+            Use saved profile (user_profile.json)
+          </label>
+        </div>
+        
+        <div class="form-group">
+          <label for="cv-uploads">Upload Current CVs (optional if profile is saved)</label>
+          <input type="file" id="cv-uploads" multiple accept=".pdf,.doc,.docx,.md" style="font-size: 0.9rem; margin-top: 0.5rem">
+        </div>
+      </div>
+
+      <div class="glass-panel d-flex flex-column">
+        <h2>Generation Settings</h2>
+        
+        <p style="margin-bottom: 1rem; color:var(--text-secondary); font-size:0.9rem;">
+          The AI will merge your experience and prioritize skills found in the JD.
+        </p>
+
+        <div class="form-group">
+          <label for="focus">Special Focus</label>
+          <input type="text" id="focus" placeholder="e.g. 'Focus on Cloud Architecture'">
+        </div>
+
+        <button id="generate-btn" style="width: 100%; margin-top: 2rem;">
+          <span id="gen-btn-text">✨ Generate Tailored CV</span>
+          <div class="loader hidden" id="gen-loader"></div>
+        </button>
+      </div>
+    </div>
+
+    <div id="results-panel" class="glass-panel hidden">
+      <h2>Review & Edit Markdown</h2>
+      <textarea id="cv-md" rows="20" style="font-family: monospace; font-size: 0.85rem; margin-top: 1rem;"></textarea>
+      
+      <div class="grid" style="margin-top: 1rem;">
+        <button id="download-docx" class="secondary">⬇️ Download Word (.docx)</button>
+        <button id="download-pdf" class="secondary">⬇️ Download PDF (.pdf)</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="js/app.js"></script>
+</body>
+</html>
