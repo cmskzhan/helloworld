@@ -13,13 +13,19 @@ import {
 import { Starfield } from '../components/Starfield';
 import { COLORS, interFamily, orbitronFamily } from '../styles';
 
-const PARAGRAPHS = [
+const DEFAULT_PARAGRAPHS = [
   'The Artemis II mission will send four astronauts on a journey around the Moon — the first crewed flight of NASA\'s Orion spacecraft.',
   'Unlike later landing missions, Artemis II follows a "free-return" trajectory: Orion uses the Moon\'s gravity to swing around and return to Earth without a major engine burn.',
   'This orbital path creates a distinctive Figure-8 pattern in space, tracing a loop around both the Earth and the Moon.',
 ];
 
-export const OverviewScene: React.FC = () => {
+export const OverviewScene: React.FC<{
+  heading?: string;
+  paragraphs?: string[];
+}> = ({
+  heading = 'What is a Free-Return Trajectory?',
+  paragraphs = DEFAULT_PARAGRAPHS,
+}) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -55,11 +61,11 @@ export const OverviewScene: React.FC = () => {
             transform: `translateX(${interpolate(headingSpring, [0, 1], [-40, 0])}px)`,
           }}
         >
-          What is a Free-Return Trajectory?
+          {heading}
         </div>
 
         {/* Animated paragraphs */}
-        {PARAGRAPHS.map((text, i) => {
+        {paragraphs.map((text, i) => {
           const delay = 20 + i * 30; // stagger by ~1 second
           const paraSpring = spring({
             frame,

@@ -37,13 +37,21 @@ type VariableDef = {
   description: string;
 };
 
-const VARIABLES: VariableDef[] = [
+const DEFAULT_VARIABLES: VariableDef[] = [
   { symbol: 'a', description: 'Focal distance — 35-40% of screen width' },
   { symbol: 't', description: 'Mission progress — mapped from 0 (Launch) to 2π (Splashdown)' },
   { symbol: 'sin²(t)', description: 'Creates the "pinch" at the center of the Figure-8' },
 ];
 
-export const EquationsScene: React.FC = () => {
+export const EquationsScene: React.FC<{
+  heading?: string;
+  variableTitle?: string;
+  variables?: VariableDef[];
+}> = ({
+  heading = 'Parametric Equations',
+  variableTitle = 'Variable Definitions',
+  variables = DEFAULT_VARIABLES,
+}) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -78,7 +86,7 @@ export const EquationsScene: React.FC = () => {
             transform: `translateY(${interpolate(headingSpring, [0, 1], [-20, 0])}px)`,
           }}
         >
-          Parametric Equations
+          {heading}
         </div>
 
         {/* Equation cards */}
@@ -160,9 +168,9 @@ export const EquationsScene: React.FC = () => {
             opacity: spring({ frame, fps, delay: 65, config: { damping: 200 } }),
           }}
         >
-          Variable Definitions
+          {variableTitle}
         </div>
-        {VARIABLES.map((v, i) => {
+        {variables.map((v, i) => {
           const delay = 75 + i * 15;
           const vSpring = spring({ frame, fps, delay, config: { damping: 200 } });
 

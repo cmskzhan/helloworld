@@ -13,7 +13,13 @@ import {
 import { Starfield } from '../components/Starfield';
 import { COLORS, interFamily, orbitronFamily } from '../styles';
 
-export const OutroScene: React.FC = () => {
+const DEFAULT_NOTE = 'This visualization is a geometric representation using the Lemniscate of Bernoulli. In a real mission, the Earth lobe is significantly larger than the Lunar lobe due to Earth\'s much larger gravitational well.';
+
+export const OutroScene: React.FC<{
+  note?: string;
+}> = ({
+  note = DEFAULT_NOTE,
+}) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
 
@@ -79,9 +85,7 @@ export const OutroScene: React.FC = () => {
             lineHeight: 1.8,
           }}
         >
-          This visualization is a geometric representation using the Lemniscate of Bernoulli.
-          In a real mission, the Earth lobe is significantly larger than the Lunar lobe
-          due to Earth's much larger gravitational well.
+          {note}
         </div>
 
         {/* Credits */}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Composition, Folder } from 'remotion';
 import { ArtemisTrajectory } from '../ArtemisTrajectory';
 import { ArtemisEducational } from './ArtemisEducational';
+import { ArtemisEducationalChinese } from './ArtemisEducationalChinese';
 import { COMP_WIDTH, COMP_HEIGHT, FPS, TOTAL_DURATION } from './styles';
 
 export const RemotionRoot: React.FC = () => {
@@ -11,6 +12,14 @@ export const RemotionRoot: React.FC = () => {
         <Composition
           id="ArtemisII-Educational"
           component={ArtemisEducational}
+          durationInFrames={TOTAL_DURATION}
+          fps={FPS}
+          width={COMP_WIDTH}
+          height={COMP_HEIGHT}
+        />
+        <Composition
+          id="ArtemisII-Educational-CN"
+          component={ArtemisEducationalChinese}
           durationInFrames={TOTAL_DURATION}
           fps={FPS}
           width={COMP_WIDTH}

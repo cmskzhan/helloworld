@@ -33,7 +33,17 @@ const getLemniscatePoints = (
   return points;
 };
 
-export const LemniscateScene: React.FC = () => {
+export const LemniscateScene: React.FC<{
+  heading?: string;
+  subtitle?: string;
+  earthLobe?: string;
+  moonLobe?: string;
+}> = ({
+  heading = 'The Lemniscate of Bernoulli',
+  subtitle = 'A geometric approximation of the Figure-8 free-return orbit',
+  earthLobe = 'Earth Lobe',
+  moonLobe = 'Moon Lobe',
+}) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
 
@@ -104,7 +114,7 @@ export const LemniscateScene: React.FC = () => {
           transform: `translateY(${interpolate(headingSpring, [0, 1], [-20, 0])}px)`,
         }}
       >
-        The Lemniscate of Bernoulli
+        {heading}
       </div>
 
       {/* Subtitle */}
@@ -122,7 +132,7 @@ export const LemniscateScene: React.FC = () => {
           opacity: interpolate(headingSpring, [0, 1], [0, 0.8]),
         }}
       >
-        A geometric approximation of the Figure-8 free-return orbit
+        {subtitle}
       </div>
 
       {/* SVG drawing area */}
@@ -196,16 +206,16 @@ export const LemniscateScene: React.FC = () => {
           transform: `translateX(${interpolate(earthLabelSpring, [0, 1], [20, 0])}px)`,
         }}
       >
-        <div
-          style={{
-            fontFamily: orbitronFamily,
-            fontWeight: 700,
-            fontSize: 22,
-            color: COLORS.earthBlue,
-          }}
-        >
-          Earth Lobe
-        </div>
+          <div
+            style={{
+              fontFamily: orbitronFamily,
+              fontWeight: 700,
+              fontSize: 22,
+              color: COLORS.earthBlue,
+            }}
+          >
+            {earthLobe}
+          </div>
         <div
           style={{
             fontFamily: interFamily,
@@ -230,16 +240,16 @@ export const LemniscateScene: React.FC = () => {
           transform: `translateX(${interpolate(moonLabelSpring, [0, 1], [-20, 0])}px)`,
         }}
       >
-        <div
-          style={{
-            fontFamily: orbitronFamily,
-            fontWeight: 700,
-            fontSize: 22,
-            color: COLORS.moonGray,
-          }}
-        >
-          Moon Lobe
-        </div>
+          <div
+            style={{
+              fontFamily: orbitronFamily,
+              fontWeight: 700,
+              fontSize: 22,
+              color: COLORS.moonGray,
+            }}
+          >
+            {moonLobe}
+          </div>
         <div
           style={{
             fontFamily: interFamily,

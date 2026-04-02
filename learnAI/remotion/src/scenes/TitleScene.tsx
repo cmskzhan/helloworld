@@ -13,7 +13,15 @@ import {
 import { Starfield } from '../components/Starfield';
 import { COLORS, orbitronFamily, interFamily } from '../styles';
 
-export const TitleScene: React.FC = () => {
+export const TitleScene: React.FC<{
+  title?: string;
+  subtitle?: string;
+  tagline?: string;
+}> = ({
+  title = 'ARTEMIS II',
+  subtitle = 'FREE-RETURN TRAJECTORY',
+  tagline = "NASA's First Crewed Lunar Mission Since Apollo",
+}) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -82,7 +90,7 @@ export const TitleScene: React.FC = () => {
             textShadow: `0 0 40px ${COLORS.cyanGlow}, 0 0 80px ${COLORS.cyanDim}`,
           }}
         >
-          ARTEMIS II
+          {title}
         </div>
 
         {/* Decorative line */}
@@ -106,7 +114,7 @@ export const TitleScene: React.FC = () => {
             transform: `translateY(${subtitleY}px)`,
           }}
         >
-          FREE-RETURN TRAJECTORY
+          {subtitle}
         </div>
 
         {/* Tagline */}
@@ -120,7 +128,7 @@ export const TitleScene: React.FC = () => {
             opacity: taglineSpring,
           }}
         >
-          NASA's First Crewed Lunar Mission Since Apollo
+          {tagline}
         </div>
       </div>
     </AbsoluteFill>

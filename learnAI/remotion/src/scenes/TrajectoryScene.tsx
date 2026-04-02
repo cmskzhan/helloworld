@@ -23,7 +23,35 @@ const getOrbitalPosition = (progress: number, cx: number, cy: number, scale: num
   return { x, y };
 };
 
-export const TrajectoryScene: React.FC = () => {
+const DEFAULT_PHASES = {
+  launch: 'LAUNCH',
+  transLunar: 'TRANS-LUNAR COAST',
+  flyby: 'LUNAR FLYBY',
+  transEarth: 'TRANS-EARTH COAST',
+  reentry: 'RE-ENTRY',
+};
+
+export const TrajectoryScene: React.FC<{
+  title?: string;
+  subtitle?: string;
+  earth?: string;
+  moon?: string;
+  orion?: string;
+  telemetry?: string;
+  progressLabel?: string;
+  phaseLabel?: string;
+  phases?: typeof DEFAULT_PHASES;
+}> = ({
+  title = 'ARTEMIS II',
+  subtitle = 'Free-Return Trajectory Simulation',
+  earth = 'EARTH',
+  moon = 'MOON',
+  orion = 'ORION',
+  telemetry = 'Orion Coordinates',
+  progressLabel = 'Mission Progress',
+  phaseLabel = 'Phase',
+  phases = DEFAULT_PHASES,
+}) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames, width, height } = useVideoConfig();
 
@@ -69,14 +97,14 @@ export const TrajectoryScene: React.FC = () => {
   const missionPct = Math.round(progress * 100);
   const missionPhase =
     progress < 0.15
-      ? 'LAUNCH'
+      ? phases.launch
       : progress < 0.4
-        ? 'TRANS-LUNAR COAST'
+        ? phases.transLunar
         : progress < 0.6
-          ? 'LUNAR FLYBY'
+          ? phases.flyby
           : progress < 0.85
-            ? 'TRANS-EARTH COAST'
-            : 'RE-ENTRY';
+            ? phases.transEarth
+            : phases.reentry;
 
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.spaceDark }}>
@@ -151,7 +179,7 @@ export const TrajectoryScene: React.FC = () => {
           opacity: hudSpring,
         }}
       >
-        EARTH
+        {earth}
       </div>
 
       {/* Moon label */}
@@ -168,7 +196,7 @@ export const TrajectoryScene: React.FC = () => {
           opacity: hudSpring,
         }}
       >
-        MOON
+        {moon}
       </div>
 
       {/* Orion label (follows spacecraft) */}
@@ -184,7 +212,7 @@ export const TrajectoryScene: React.FC = () => {
           whiteSpace: 'nowrap',
         }}
       >
-        ORION
+        {orion}
       </div>
 
       {/* ── HUD: Top-left title ── */}
@@ -205,7 +233,7 @@ export const TrajectoryScene: React.FC = () => {
             letterSpacing: 4,
           }}
         >
-          ARTEMIS II
+          {title}
         </div>
         <div
           style={{
@@ -215,7 +243,7 @@ export const TrajectoryScene: React.FC = () => {
             marginTop: 4,
           }}
         >
-          Free-Return Trajectory Simulation
+          {subtitle}
         </div>
       </div>
 
@@ -241,7 +269,7 @@ export const TrajectoryScene: React.FC = () => {
               letterSpacing: 2,
             }}
           >
-            Mission Progress
+            {progressLabel}
           </div>
           <div
             style={{
@@ -266,7 +294,7 @@ export const TrajectoryScene: React.FC = () => {
               letterSpacing: 2,
             }}
           >
-            Phase
+            {phaseLabel}
           </div>
           <div
             style={{
@@ -300,7 +328,7 @@ export const TrajectoryScene: React.FC = () => {
             letterSpacing: 2,
           }}
         >
-          Orion Coordinates
+          {telemetry}
         </div>
         <div
           style={{

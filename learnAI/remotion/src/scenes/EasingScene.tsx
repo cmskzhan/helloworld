@@ -15,13 +15,19 @@ import {
 import { Starfield } from '../components/Starfield';
 import { COLORS, interFamily, orbitronFamily, monoFamily } from '../styles';
 
-const BULLET_POINTS = [
+const DEFAULT_BULLET_POINTS = [
   { label: 'Perigee (Earth)', desc: 'Highest velocity — spacecraft accelerates under Earth\'s gravity', color: COLORS.earthBlue },
   { label: 'Apogee (Moon)', desc: 'Lowest velocity — spacecraft "hangs" before lunar gravity slingshot', color: COLORS.moonGray },
   { label: 'Easing Function', desc: 'Easing.inOut(Easing.sin) mimics gravity-driven acceleration', color: COLORS.cyanGlow },
 ];
 
-export const EasingScene: React.FC = () => {
+export const EasingScene: React.FC<{
+  heading?: string;
+  bullets?: { label: string; desc: string; color?: string }[];
+}> = ({
+  heading = 'Orbital Velocity & Easing',
+  bullets = DEFAULT_BULLET_POINTS,
+}) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
 
@@ -99,10 +105,10 @@ export const EasingScene: React.FC = () => {
             transform: `translateY(${interpolate(headingSpring, [0, 1], [-20, 0])}px)`,
           }}
         >
-          Orbital Velocity &amp; Easing
+          {heading}
         </div>
 
-        {BULLET_POINTS.map((bp, i) => {
+        {bullets.map((bp, i) => {
           const delay = 20 + i * 20;
           const bpSpring = spring({ frame, fps, delay, config: { damping: 200 } });
 
@@ -120,7 +126,7 @@ export const EasingScene: React.FC = () => {
                   fontFamily: orbitronFamily,
                   fontWeight: 700,
                   fontSize: 22,
-                  color: bp.color,
+                  color: bp.color || (i === 0 ? COLORS.earthBlue : i === 1 ? COLORS.moonGray : COLORS.cyanGlow),
                   marginBottom: 6,
                 }}
               >
