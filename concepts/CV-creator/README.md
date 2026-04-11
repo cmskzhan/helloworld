@@ -29,7 +29,7 @@ This project consists of two main components running as Streamlit applications:
 
 ## 🏗 Raspberry Pi 4 Deployment
 
-This project is optimized to run in a containerized environment on a Raspberry Pi 4.
+This project is also optimized to run in a containerized environment on a Raspberry Pi 4.
 
 ### 1. Prerequisites
 Ensure you have Docker and Docker Compose installed on your Pi:
@@ -48,6 +48,7 @@ sudo pip3 install docker-compose
 ### 2. Build the Containers
 Navigate to the project directory and build the images:
 ```bash
+cd ~/github/helloworld/concepts/CV-creator
 docker compose build
 ```
 *Note: The first build might take a few minutes as it installs Python dependencies.*
