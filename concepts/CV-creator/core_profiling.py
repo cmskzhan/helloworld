@@ -114,60 +114,123 @@ def delete_profile() -> bool:
     return False
 
 def get_profile_text(profile: dict = None) -> str:
+    """Return profile as markdown matching the CV template structure."""
     if profile is None:
         profile = load_profile()
     lines = []
     pi = profile.get("personal_info", {})
-    if pi.get("full_name"): lines.append(f"Name: {pi['full_name']}")
-    if pi.get("email"): lines.append(f"Email: {pi['email']}")
-    if pi.get("phone"): lines.append(f"Phone: {pi['phone']}")
-    if pi.get("location"): lines.append(f"Location: {pi['location']}")
-    if pi.get("linkedin"): lines.append(f"LinkedIn: {pi['linkedin']}")
-    if pi.get("github"): lines.append(f"GitHub: {pi['github']}")
-    if pi.get("website"): lines.append(f"Website: {pi['website']}")
-    if pi.get("summary"): lines.append(f"\nProfessional Summary:\n{pi['summary']}")
+    
+    # Name as H1
+    if pi.get("full_name"):
+        lines.append(f"# {pi['full_name']}")
+        lines.append("")
+    
+    # Contact line in template format: **Label** | value | **Label** | value
+    contact_parts = []
+    if pi.get("email"): contact_parts.append(f"**Email** | {pi['email']}")
+    if pi.get("phone"): contact_parts.append(f"**Phone** | {pi['phone']}")
+    if pi.get("location"): contact_parts.append(f"**Location** | {pi['location']}")
+    if pi.get("linkedin"): contact_parts.append(f"**LinkedIn** | {pi['linkedin']}")
+    if pi.get("github"): contact_parts.append(f"**GitHub** | {pi['github']}")
+    if pi.get("website"): contact_parts.append(f"**Website** | {pi['website']}")
+    if contact_parts:
+        lines.append(" | ".join(contact_parts))
+        lines.append("")
+    
+    # Summary
+    if pi.get("summary"):
+        lines.append("## Professional Summary")
+        lines.append("")
+        lines.append(pi['summary'])
+        lines.append("")
+    
+    # Work Experience
     work = profile.get("work_experience", [])
     if work:
-        lines.append("\n--- WORK EXPERIENCE ---")
+        lines.append("## Work Experience")
+        lines.append("")
         for job in work:
             title = job.get("job_title", "")
             company = job.get("company", "")
             loc = job.get("location", "")
             dates = f"{job.get('start_date', '')} - {job.get('end_date', '')}"
-            lines.append(f"\n{title} at {company} ({loc}) | {dates}")
-            for r in job.get("responsibilities", []): lines.append(f"  - {r}")
-            for a in job.get("achievements", []): lines.append(f"  * {a}")
+            lines.append(f"**{title}** | {company} | {loc} | {dates}")
+            lines.append("")
+            for r in job.get("responsibilities", []):
+                lines.append(f"- {r}")
+            for a in job.get("achievements", []):
+                lines.append(f"- {a}")
+            lines.append("")
+    
+    # Education
     edu = profile.get("education", [])
     if edu:
-        lines.append("\n--- EDUCATION ---")
+        lines.append("## Education")
+        lines.append("")
         for e in edu:
             degree = e.get("degree", "")
             inst = e.get("institution", "")
+            loc = e.get("location", "")
             dates = f"{e.get('start_date', '')} - {e.get('end_date', '')}"
-            lines.append(f"\n{degree} — {inst} | {dates}")
-            if e.get("details"): lines.append(f"  {e['details']}")
+            lines.append(f"**{degree}** | {inst} | {loc} | {dates}")
+            lines.append("")
+            if e.get("details"):
+                lines.append(f"- {e['details']}")
+                lines.append("")
+    
+    # Skills
     skills = profile.get("skills", {})
     if any(skills.get(k) for k in ("technical", "soft", "languages", "certifications")):
-        lines.append("\n--- SKILLS ---")
-        if skills.get("technical"): lines.append(f"Technical: {', '.join(skills['technical'])}")
-        if skills.get("soft"): lines.append(f"Soft: {', '.join(skills['soft'])}")
-        if skills.get("languages"): lines.append(f"Languages: {', '.join(skills['languages'])}")
-        if skills.get("certifications"): lines.append(f"Certifications: {', '.join(skills['certifications'])}")
+        lines.append("## Technical Skills")
+        lines.append("")
+        if skills.get("technical"):
+            lines.append(f"**Technical:** {', '.join(skills['technical'])}")
+        if skills.get("soft"):
+            lines.append(f"**Soft Skills:** {', '.join(skills['soft'])}")
+        if skills.get("languages"):
+            lines.append(f"**Languages:** {', '.join(skills['languages'])}")
+        lines.append("")
+    
+    # Certifications (separate section if present)
+    if skills.get("certifications"):
+        lines.append("## Certifications")
+        lines.append("")
+        for cert in skills["certifications"]:
+            lines.append(f"- {cert}")
+        lines.append("")
+    
+    # Projects
     projects = profile.get("projects", [])
     if projects:
-        lines.append("\n--- PROJECTS ---")
+        lines.append("## Projects")
+        lines.append("")
         for p in projects:
-            lines.append(f"\n{p.get('name', '')} — {p.get('description', '')}")
-            if p.get("technologies"): lines.append(f"  Tech: {', '.join(p['technologies'])}")
-            if p.get("url"): lines.append(f"  URL: {p['url']}")
+            lines.append(f"**{p.get('name', '')}** | {p.get('description', '')}")
+            lines.append("")
+            if p.get("technologies"):
+                lines.append(f"- Technologies: {', '.join(p['technologies'])}")
+            if p.get("url"):
+                lines.append(f"- URL: {p['url']}")
+            lines.append("")
+    
+    # Publications
     pubs = profile.get("publications", [])
     if pubs:
-        lines.append("\n--- PUBLICATIONS ---")
-        for pub in pubs: lines.append(f"  - {pub}")
+        lines.append("## Publications")
+        lines.append("")
+        for pub in pubs:
+            lines.append(f"- {pub}")
+        lines.append("")
+    
+    # Awards
     awards = profile.get("awards", [])
     if awards:
-        lines.append("\n--- AWARDS ---")
-        for a in awards: lines.append(f"  - {a}")
+        lines.append("## Awards")
+        lines.append("")
+        for a in awards:
+            lines.append(f"- {a}")
+        lines.append("")
+    
     return "\n".join(lines)
 
 def _merge_list_of_dicts(existing: list, incoming: list, key_fields: list) -> list:

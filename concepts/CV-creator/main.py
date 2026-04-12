@@ -190,10 +190,26 @@ async def generate_cv(
         {context_text}
         
         REQUIREMENTS:
-        - Use Markdown (H1 for Name, H2 for Sections).
+        - Use Markdown with the following exact structure:
+          1. H1 for Name (e.g., # FULL NAME)
+          2. Contact line: **Email** | email@example.com | **Phone** | +1234567 | **Location** | City, Country | **LinkedIn** | linkedin.com/in/user
+          3. ## Professional Summary (2-3 sentences, tailored to the JD)
+          4. ## Technical Skills
+          5. ## Work Experience
+          6. ## Education
+          7. ## Certifications (if applicable)
+          8. ## Projects (if applicable)
+        - For each job, use this exact format:
+          **Job Title** | Company Name | Location | Start Date - End Date
+          - Achievement bullet 1
+          - Achievement bullet 2
+        - For skills, use: **Category:** item1, item2, item3
         - Focus on: {focus}
         - Match keywords from the JD naturally.
-        - Ensure bullet points are achievement-oriented.
+        - Ensure bullet points are achievement-oriented with measurable outcomes.
+        - Do NOT use markdown tables, horizontal rules (---), or inline code blocks.
+        - Do NOT use ### headers — use **Title** | Company pattern for job entries.
+        - Omit empty sections entirely.
         """
         client = genai.Client(api_key=api_key)
         response = client.models.generate_content(model=model_name, contents=prompt)
