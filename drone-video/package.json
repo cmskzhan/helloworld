@@ -1,0 +1,25 @@
+{
+  "name": "drone-video",
+  "version": "1.0.0",
+  "description": "Surrey Heathlands Excursion Cinematic Compilation in Remotion",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "remotion preview src/index.ts",
+    "build": "remotion bundle src/index.ts out/bundle.js",
+    "render": "remotion render SurreyExcursion out/video.mp4 --gl=angle --concurrency=1"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.228",
+    "@remotion/media": "^4.0.228",
+    "@remotion/sfx": "^4.0.228",
+    "@remotion/transitions": "^4.0.228",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.228"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.6.3"
+  }
+}
