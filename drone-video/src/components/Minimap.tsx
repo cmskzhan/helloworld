@@ -1,5 +1,5 @@
 import React from "react";
-import { useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
+import { useCurrentFrame, useVideoConfig, interpolate, Easing, staticFile } from "remotion";
 import {
   SCENES,
   ROUTE_WAYPOINTS,
@@ -14,8 +14,8 @@ const LNG_MIN = -0.5960;
 const LNG_MAX = -0.5530;
 
 // SVG canvas inside the card
-const MAP_W = 272;
-const MAP_H = 160;
+const MAP_W = 395;
+const MAP_H = 395;
 const PAD = 10;
 
 function project(lat: number, lng: number): [number, number] {
@@ -106,7 +106,7 @@ export const Minimap: React.FC = () => {
         position: "absolute",
         top: 32,
         right: 32,
-        width: 296,
+        width: 415,
         opacity: cardOpacity,
         transform: `translateX(${cardX}px)`,
         fontFamily: "'Space Mono', 'Courier New', monospace",
@@ -172,8 +172,13 @@ export const Minimap: React.FC = () => {
             viewBox={`0 0 ${MAP_W} ${MAP_H}`}
             style={{ display: "block" }}
           >
-            {/* Dark terrain background */}
-            <rect width={MAP_W} height={MAP_H} fill="#0c1a10" />
+            {/* Map background image */}
+            <image
+              href={staticFile("map-background.png")}
+              width={MAP_W}
+              height={MAP_H}
+              opacity={0.5}
+            />
 
             {/* Subtle grid lines */}
             {[0.25, 0.5, 0.75].map((t) => (
