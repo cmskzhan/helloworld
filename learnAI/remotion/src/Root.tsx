@@ -5,6 +5,15 @@ import { ArtemisEducational } from './ArtemisEducational';
 import { ArtemisEducationalChinese } from './ArtemisEducationalChinese';
 import { COMP_WIDTH, COMP_HEIGHT, FPS, TOTAL_DURATION } from './styles';
 
+import { SurreyExcursion } from './drone-video/Composition';
+import { MinimapPreviewComposition } from './drone-video/MinimapPreview';
+import {
+  WIDTH as DRONE_WIDTH,
+  HEIGHT as DRONE_HEIGHT,
+  FPS as DRONE_FPS,
+  TOTAL_FRAMES as DRONE_TOTAL_FRAMES,
+} from './drone-video/telemetry';
+
 export const RemotionRoot: React.FC = () => {
   return (
     <>
@@ -34,6 +43,24 @@ export const RemotionRoot: React.FC = () => {
           fps={30}
           width={1920}
           height={1080}
+        />
+      </Folder>
+      <Folder name="Surrey-Excursion">
+        <Composition
+          id="MinimapPreview"
+          component={MinimapPreviewComposition}
+          durationInFrames={DRONE_TOTAL_FRAMES}
+          fps={DRONE_FPS}
+          width={DRONE_WIDTH}
+          height={DRONE_HEIGHT}
+        />
+        <Composition
+          id="SurreyExcursion"
+          component={SurreyExcursion}
+          durationInFrames={DRONE_TOTAL_FRAMES}
+          fps={DRONE_FPS}
+          width={DRONE_WIDTH}
+          height={DRONE_HEIGHT}
         />
       </Folder>
     </>

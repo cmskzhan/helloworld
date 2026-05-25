@@ -8,6 +8,8 @@
   "dependencies": {
     "@remotion/cli": "4.0.443",
     "@remotion/google-fonts": "4.0.443",
+    "@remotion/media": "4.0.443",
+    "@remotion/sfx": "4.0.443",
     "@remotion/tailwind-v4": "4.0.443",
     "@remotion/transitions": "4.0.443",
     "react": "19.2.3",
@@ -26,6 +28,7 @@
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle",
+    "render": "node scripts/render.js",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"
   },
