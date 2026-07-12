@@ -1,7 +1,7 @@
 function showToast(msg, type="info") {
     const toast = document.getElementById('toast');
     toast.textContent = msg;
-    toast.style.borderColor = type === 'error' ? 'var(--danger-color)' : 'var(--accent-color)';
+    toast.style.borderColor = type === "error" ? 'var(--danger-color)' : 'var(--accent-color)';
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
@@ -16,6 +16,54 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+function renderPreview() {
+    const mdText = document.getElementById('cv-md').value;
+    const previewEl = document.getElementById('cv-preview');
+    if (!mdText.trim()) {
+        previewEl.innerHTML = '<p class="preview-empty">Edit the markdown to see a live preview…</p>';
+        return;
+    }
+    try {
+        const rawHtml = marked.parse(mdText);
+        previewEl.innerHTML = DOMPurify.sanitize(rawHtml);
+    } catch (e) {
+        previewEl.innerHTML = '<p class="preview-empty">Preview rendering failed. Ensure CDN scripts (marked, DOMPurify) are accessible.</p>';
+        console.error("Preview render error:", e);
+    }
+}
+
+function setView(mode) {
+    try {
+        const container = document.getElementById('editor-preview-container');
+        const editorPane = document.getElementById('editor-pane');
+        const previewPane = document.getElementById('preview-pane');
+        const buttons = document.querySelectorAll('.view-toggle .toggle-btn');
+        buttons.forEach(b => b.classList.remove('active'));
+
+        container.classList.remove('view-split', 'view-editor', 'view-preview');
+
+        if (mode === 'split') {
+            container.classList.add('view-split');
+            editorPane.classList.remove('hidden');
+            previewPane.classList.remove('hidden');
+            document.getElementById('view-split').classList.add('active');
+        } else if (mode === 'editor') {
+            container.classList.add('view-editor');
+            editorPane.classList.remove('hidden');
+            previewPane.classList.add('hidden');
+            document.getElementById('view-editor').classList.add('active');
+        } else if (mode === 'preview') {
+            container.classList.add('view-preview');
+            editorPane.classList.add('hidden');
+            previewPane.classList.remove('hidden');
+            document.getElementById('view-preview').classList.add('active');
+        }
+        if (mode !== 'editor') renderPreview();
+    } catch (e) {
+        console.error("setView error:", e);
+    }
 }
 
 async function updateModelList() {
@@ -108,6 +156,8 @@ document.getElementById('generate-btn').addEventListener('click', async () => {
         
         document.getElementById('results-panel').classList.remove('hidden');
         document.getElementById('cv-md').value = data.markdown;
+        setView('split');
+        renderPreview();
         showToast("CV generated successfully!");
     } catch(e) {
         showToast(e.message, "error");
@@ -146,3 +196,9 @@ async function downloadExport(format) {
 
 document.getElementById('download-pdf').addEventListener('click', () => downloadExport('pdf'));
 document.getElementById('download-docx').addEventListener('click', () => downloadExport('docx'));
+
+document.getElementById('cv-md').addEventListener('input', debounce(renderPreview, 200));
+
+document.getElementById('view-split').addEventListener('click', () => setView('split'));
+document.getElementById('view-editor').addEventListener('click', () => setView('editor'));
+document.getElementById('view-preview').addEventListener('click', () => setView('preview'));

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   --bg-color: #0d1117;
@@ -169,6 +169,14 @@ button:disabled {
   display: none !important;
 }
 
+.d-flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
 .badge {
   display: inline-block;
   padding: 0.25rem 0.5rem;
@@ -233,4 +241,243 @@ th {
   color: var(--text-secondary);
   font-weight: 500;
   font-size: 0.9rem;
+}
+
+/* ── Results panel: editor + preview ── */
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.view-toggle {
+  display: inline-flex;
+  gap: 0.25rem;
+  background: rgba(1, 4, 9, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.2rem;
+}
+
+.view-toggle .toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-toggle .toggle-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.view-toggle .toggle-btn.active {
+  background: var(--accent-color);
+  color: #fff;
+}
+
+.editor-preview-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  min-height: 500px;
+  height: 60vh;
+}
+
+.editor-preview-container.view-editor {
+  grid-template-columns: 1fr;
+}
+
+.editor-preview-container.view-preview {
+  grid-template-columns: 1fr;
+}
+
+.editor-pane,
+.preview-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.pane-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.cv-md-textarea {
+  flex: 1;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  resize: none;
+  min-height: 400px;
+}
+
+.preview-pane {
+  overflow: hidden;
+}
+
+.cv-preview-content {
+  flex: 1;
+  overflow-y: auto;
+  background: rgba(1, 4, 9, 0.6);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 1.5rem;
+  line-height: 1.7;
+}
+
+.preview-empty {
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* ── Rendered markdown styling inside preview ── */
+
+.cv-preview-content h1,
+.cv-preview-content h2,
+.cv-preview-content h3,
+.cv-preview-content h4 {
+  margin-top: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cv-preview-content h1 {
+  font-size: 1.5rem;
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 0.3rem;
+}
+
+.cv-preview-content h2 {
+  font-size: 1.25rem;
+  color: var(--accent-color);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.2rem;
+}
+
+.cv-preview-content h3 {
+  font-size: 1.1rem;
+  color: var(--accent-color);
+}
+
+.cv-preview-content h4 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+}
+
+.cv-preview-content p {
+  margin-bottom: 0.6rem;
+}
+
+.cv-preview-content ul,
+.cv-preview-content ol {
+  margin: 0.4rem 0 0.8rem 1.5rem;
+}
+
+.cv-preview-content ul {
+  list-style: disc;
+}
+
+.cv-preview-content ol {
+  list-style: decimal;
+}
+
+.cv-preview-content li {
+  margin-bottom: 0.25rem;
+}
+
+.cv-preview-content strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.cv-preview-content em {
+  color: #bc8cf2;
+}
+
+.cv-preview-content a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+.cv-preview-content a:hover {
+  text-decoration: underline;
+}
+
+.cv-preview-content hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 1rem 0;
+}
+
+.cv-preview-content blockquote {
+  border-left: 3px solid var(--accent-color);
+  padding-left: 1rem;
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
+}
+
+.cv-preview-content code {
+  background: rgba(136, 150, 168, 0.15);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-size: 0.85em;
+  font-family: 'Fira Code', monospace;
+}
+
+.cv-preview-content pre {
+  background: rgba(1, 4, 9, 0.8);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.75rem;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+
+.cv-preview-content pre code {
+  background: none;
+  padding: 0;
+}
+
+.cv-preview-content table {
+  margin: 0.5rem 0;
+}
+
+/* Responsive: stack editor and preview on small screens */
+@media (max-width: 768px) {
+  .editor-preview-container {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .editor-preview-container.view-split {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-md-textarea {
+    min-height: 300px;
+  }
+
+  .cv-preview-content {
+    min-height: 300px;
+  }
 }

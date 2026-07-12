@@ -81,8 +81,24 @@
     </div>
 
     <div id="results-panel" class="glass-panel hidden">
-      <h2>Review & Edit Markdown</h2>
-      <textarea id="cv-md" rows="20" style="font-family: monospace; font-size: 0.85rem; margin-top: 1rem;"></textarea>
+      <div class="results-header">
+        <h2>Review & Edit</h2>
+        <div class="view-toggle">
+          <button id="view-split" class="toggle-btn active" title="Split view">⬌ Split</button>
+          <button id="view-editor" class="toggle-btn" title="Editor only">✏️ Editor</button>
+          <button id="view-preview" class="toggle-btn" title="Preview only">👁️ Preview</button>
+        </div>
+      </div>
+      <div id="editor-preview-container" class="editor-preview-container">
+        <div id="editor-pane" class="editor-pane">
+          <label class="pane-label">Markdown Source</label>
+          <textarea id="cv-md" class="cv-md-textarea"></textarea>
+        </div>
+        <div id="preview-pane" class="preview-pane">
+          <label class="pane-label">Rendered Preview</label>
+          <div id="cv-preview" class="cv-preview-content"></div>
+        </div>
+      </div>
       
       <div class="grid" style="margin-top: 1rem;">
         <button id="download-docx" class="secondary">⬇️ Download Word (.docx)</button>
@@ -92,6 +108,8 @@
   </div>
 
   <div id="toast" class="toast"></div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
