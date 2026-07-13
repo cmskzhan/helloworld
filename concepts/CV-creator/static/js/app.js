@@ -94,80 +94,6 @@ async function updateModelList() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-    document.getElementById('api-key').addEventListener('input', debounce(updateModelList, 1000));
-    // ... rest of init
-    // Check if profile exists
-    try {
-        const res = await fetch('/api/profile');
-        if(res.ok) {
-            const profile = await res.json();
-            const hasProfile = profile.personal_info && profile.personal_info.full_name;
-            if(hasProfile) {
-                document.getElementById('profile-status').style.display = 'block';
-                document.getElementById('use-profile-wrapper').style.display = 'block';
-                document.getElementById('profile-status-text').textContent = 
-                    `✅ ${profile.personal_info.full_name} profile found (${profile.work_experience.length} jobs).`;
-            }
-        }
-    } catch(e) {
-        console.error(e);
-    }
-});
-
-document.getElementById('generate-btn').addEventListener('click', async () => {
-    const apiKey = document.getElementById('api-key').value;
-    const jd = document.getElementById('jd').value;
-    const focus = document.getElementById('focus').value;
-    const modelName = document.getElementById('model-name').value;
-    const useProfile = document.getElementById('use-profile') ? document.getElementById('use-profile').checked : false;
-    const files = document.getElementById('cv-uploads').files;
-
-    if(!apiKey) return showToast("API Key is required", "error");
-    if(!jd) return showToast("Job description is required", "error");
-    if(!useProfile && files.length === 0) return showToast("Provide at least one CV or enable saved profile", "error");
-
-    const formData = new FormData();
-    formData.append('api_key', apiKey);
-    formData.append('jd', jd);
-    formData.append('focus', focus);
-    formData.append('model_name', modelName);
-    formData.append('use_profile', useProfile);
-    
-    for (let i = 0; i < files.length; i++) {
-        formData.append('files', files[i]);
-    }
-
-    const btn = document.getElementById('generate-btn');
-    const txt = document.getElementById('gen-btn-text');
-    const loader = document.getElementById('gen-loader');
-
-    btn.disabled = true;
-    txt.classList.add('hidden');
-    loader.classList.remove('hidden');
-
-    try {
-        const res = await fetch('/api/cv/generate', {
-            method: 'POST',
-            body: formData
-        });
-        const data = await res.json();
-        if(!res.ok) throw new Error(data.detail || "Failed to generate");
-        
-        document.getElementById('results-panel').classList.remove('hidden');
-        document.getElementById('cv-md').value = data.markdown;
-        setView('split');
-        renderPreview();
-        showToast("CV generated successfully!");
-    } catch(e) {
-        showToast(e.message, "error");
-    } finally {
-        btn.disabled = false;
-        txt.classList.remove('hidden');
-        loader.classList.add('hidden');
-    }
-});
-
 async function downloadExport(format) {
     const markdown = document.getElementById('cv-md').value;
     if(!markdown) return;
@@ -194,11 +120,89 @@ async function downloadExport(format) {
     }
 }
 
-document.getElementById('download-pdf').addEventListener('click', () => downloadExport('pdf'));
-document.getElementById('download-docx').addEventListener('click', () => downloadExport('docx'));
+document.addEventListener('DOMContentLoaded', async () => {
+    // ── API key → model list ──────────────────────────────────────────────────
+    document.getElementById('api-key').addEventListener('input', debounce(updateModelList, 1000));
 
-document.getElementById('cv-md').addEventListener('input', debounce(renderPreview, 200));
+    // ── View-toggle buttons ───────────────────────────────────────────────────
+    document.getElementById('view-split').addEventListener('click', () => setView('split'));
+    document.getElementById('view-editor').addEventListener('click', () => setView('editor'));
+    document.getElementById('view-preview').addEventListener('click', () => setView('preview'));
 
-document.getElementById('view-split').addEventListener('click', () => setView('split'));
-document.getElementById('view-editor').addEventListener('click', () => setView('editor'));
-document.getElementById('view-preview').addEventListener('click', () => setView('preview'));
+    // ── Live markdown → preview ───────────────────────────────────────────────
+    document.getElementById('cv-md').addEventListener('input', debounce(renderPreview, 200));
+
+    // ── Download buttons ──────────────────────────────────────────────────────
+    document.getElementById('download-pdf').addEventListener('click', () => downloadExport('pdf'));
+    document.getElementById('download-docx').addEventListener('click', () => downloadExport('docx'));
+
+    // ── Generate button ───────────────────────────────────────────────────────
+    document.getElementById('generate-btn').addEventListener('click', async () => {
+        const apiKey = document.getElementById('api-key').value;
+        const jd = document.getElementById('jd').value;
+        const focus = document.getElementById('focus').value;
+        const modelName = document.getElementById('model-name').value;
+        const useProfile = document.getElementById('use-profile') ? document.getElementById('use-profile').checked : false;
+        const files = document.getElementById('cv-uploads').files;
+
+        if (!apiKey) return showToast("API Key is required", "error");
+        if (!jd) return showToast("Job description is required", "error");
+        if (!useProfile && files.length === 0) return showToast("Provide at least one CV or enable saved profile", "error");
+
+        const formData = new FormData();
+        formData.append('api_key', apiKey);
+        formData.append('jd', jd);
+        formData.append('focus', focus);
+        formData.append('model_name', modelName);
+        formData.append('use_profile', useProfile);
+
+        for (let i = 0; i < files.length; i++) {
+            formData.append('files', files[i]);
+        }
+
+        const btn = document.getElementById('generate-btn');
+        const txt = document.getElementById('gen-btn-text');
+        const loader = document.getElementById('gen-loader');
+
+        btn.disabled = true;
+        txt.classList.add('hidden');
+        loader.classList.remove('hidden');
+
+        try {
+            const res = await fetch('/api/cv/generate', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || "Failed to generate");
+
+            document.getElementById('results-panel').classList.remove('hidden');
+            document.getElementById('cv-md').value = data.markdown;
+            setView('split');
+            showToast("CV generated successfully!");
+        } catch (e) {
+            showToast(e.message, "error");
+        } finally {
+            btn.disabled = false;
+            txt.classList.remove('hidden');
+            loader.classList.add('hidden');
+        }
+    });
+
+    // ── Check if a saved profile exists ───────────────────────────────────────
+    try {
+        const res = await fetch('/api/profile');
+        if (res.ok) {
+            const profile = await res.json();
+            const hasProfile = profile.personal_info && profile.personal_info.full_name;
+            if (hasProfile) {
+                document.getElementById('profile-status').style.display = 'block';
+                document.getElementById('use-profile-wrapper').style.display = 'block';
+                document.getElementById('profile-status-text').textContent =
+                    `✅ ${profile.personal_info.full_name} profile found (${profile.work_experience.length} jobs).`;
+            }
+        }
+    } catch (e) {
+        console.error(e);
+    }
+});
