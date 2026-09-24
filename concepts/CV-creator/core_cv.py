@@ -148,6 +148,18 @@ class CV_PDF(FPDF):
                 i += 1
                 continue
 
+            # Horizontal rule: --- or *** or ___
+            if re.match(r'^\s*([-*_])\s*(?:\1\s*){2,}$', line):
+                self.ln(2)
+                y = self.get_y()
+                self.set_draw_color(*LIGHT_GRAY)
+                self.set_line_width(0.3)
+                self.line(self.l_margin, y, self.w - self.r_margin, y)
+                self.ln(4)
+                prev_was_section_header = True
+                i += 1
+                continue
+
             # H2: Section headers
             if line.startswith('## '):
                 section_title = self._sanitize(line[3:].strip())
