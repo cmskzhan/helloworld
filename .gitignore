@@ -19,3 +19,7 @@ node_modules/
 concepts/CV-creator/trainingData/*.md
 concepts/CV-creator/__pycache__/*
 learnAI/remotion/out/*
+
+# remotion
+learnAI/remotion/out/*
+learnAI/remotion/package-lock.json
