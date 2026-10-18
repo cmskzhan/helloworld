@@ -15,20 +15,39 @@
       "job_title": "Principal Site Reliability Engineer",
       "start_date": "Jan 2021",
       "end_date": "Present",
-      "responsibilities": [
-        "Design and create tools for availability and latency detection to minimize MTTD and MTTR for Vanguard applications running on AWS.",
-        "Onboard and support new mission critical products to IST Run team and setup relevant SLO, SLI.",
-        "Troubleshooting and debugging application running on Linux. Investigate exceptions and stack traces in log aggregation tools.",
-        "Investigate CDN, network issue on TCP/IP stacks and websockets with DevOpSec team.",
-        "Perform data integrity and data reconciliation by developing python script to query dynamoDB and api/graphql backend, monitoring SSL certs expiration.",
-        "Produce python script for automation and toil elimination.",
-        "Supervise and script performance tests against restAPI and GraphQL in Locust.",
-        "Chair forums for developers to improve DX and self service portals.",
-        "Provide reports on incident trends and self-healing event ratio.",
-        "Recruit and interview junior members of the IST RUN global team (UK, Australia, US).",
-        "Validate DOCKERFILE and investigate container logs for incident analysis.",
-        "Lead multi-region and multi-availability zone DR tests projects."
-      ]
+      "responsibilities": {
+        "Non AI related": [
+          "Design and create tools for availability and latency detection to minimize MTTD and MTTR for Vanguard applications running on AWS.",
+          "Onboard and support new mission critical products to IST Run team and setup relevant SLO, SLI.",
+          "Troubleshooting and debugging application running on Linux. Investigate exceptions and stack traces in log aggregation tools.",
+          "Investigate CDN, network issue on TCP/IP stacks and websockets with DevOpSec team.",
+          "Perform data integrity and data reconciliation by developing python script to query dynamoDB and api/graphql backend, monitoring SSL certs expiration.",
+          "Produce python script for automation and toil elimination.",
+          "Supervise and script performance tests against restAPI and GraphQL in Locust.",
+          "Chair forums for developers to improve DX and self service portals.",
+          "Provide reports on incident trends and self-healing event ratio.",
+          "Recruit and interview junior members of the IST RUN global team (UK, Australia, US).",
+          "Validate DOCKERFILE and investigate container logs for incident analysis.",
+          "Lead multi-region and multi-availability zone DR tests projects."
+        ],
+        "AI related": [
+          "Lead adoption of AI-enabled toolings to improve incident response and monitoring capabilities within the team.",
+          "Promote the use of LLMs to assist on code debugging, PR request reviews, log analysis and documentation generation.",
+          "Drive AI experimentation analysis and token usage efficiency initiatives.",
+          "Provide technical leadership for AI-enabled observability platform development and implementation.",
+          "Evaluate and provide guidance on LLM selection, integration patterns, and prompt engineering strategies to optimize AI-augmented incident response workflows.",
+          "Mentor team members on prompt engineering techniques and effective utilization of AI tools to enhance operational efficiency.",
+          "Champion responsible AI usage by defining practical guardrails for quality, security and human oversight in engineering processes",
+          "Lead cross-team efforts to operationalize the AI capabilities across different mission critical applications",
+          "Connect AI innovation to measurable service and business outcomes",
+          "Identify and prioritize high value AI opportunities that align with organizational goals and objectives",
+          "Reduce risk of incorrect AI outputs impacting prouction decisions through framework validation",
+          "Improve confidence of AI adoption across stakeholders",
+          "Define AI adoption strategy and directly contribute to implementation to ensure alignment between vision and execution",
+          "Architect AI powered solutions including workflows, automation and integrations; validate and refine solution iteratively",
+          "Identify and pilot innovaive AI use cases, reduce time from concept to production adoption"
+        ]
+      }
     },
     {
       "company": "NASDAQ Int'l, Market Technology",

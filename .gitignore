@@ -18,6 +18,7 @@ node_modules/
 .DS_Store
 concepts/CV-creator/trainingData/*.md
 concepts/CV-creator/__pycache__/*
+learnAI/remotion/out/*
 
 # remotion
 learnAI/remotion/out/*
