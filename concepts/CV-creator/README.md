@@ -1,6 +1,6 @@
 # 📄 AI CV Tailor & Profile Manager
 
-A suite of local microservices designed to help you manage your professional history and generate perfectly tailored CVs using Google's Gemini AI. Designed for low resource usage on Raspberry Pi using FastAPI and vanilla JS/HTML.
+A suite of local microservices designed to help you manage your professional history and generate perfectly tailored CVs using Anthropic's Claude models via AWS Bedrock. Designed for low resource usage on Raspberry Pi using FastAPI and vanilla JS/HTML.
 
 ## 🚀 Overview
 
@@ -21,7 +21,7 @@ This project consists of two main components served by a single FastAPI backend:
 
 - **Multi-Format Support**: Parse `.pdf`, `.docx`, `.doc`, and `.md` files.
 - **Persistent Profile**: Your data stays local in `user_profile.json`.
-- **AI-Powered Deduplication**: Intelligently merge similar roles and skills via Gemini.
+- **AI-Powered Deduplication**: Intelligently merge similar roles and skills via Claude.
 - **Interactive Review**: Edit the AI-generated Markdown before exporting.
 - **High Performance UI**: Built with vanilla HTML/JS/CSS to minimize memory usage on RPi (compared to Streamlit).
 
@@ -64,11 +64,14 @@ If you prefer to run the scripts directly without Docker:
    ```bash
    pip install -r requirements.txt
    ```
-2. **Run Backend App**:
+2. **Configure environment**: copy `.env.example` to `.env` and fill in your AWS/Bedrock
+   values (see [Configuration](#-configuration) below). It's loaded automatically — no need
+   to `source` it manually.
+3. **Run Backend App**:
    ```bash
    uvicorn main:app --reload
    ```
-3. **Access Apps**: Navigate to `http://localhost:8000/`
+4. **Access Apps**: Navigate to `http://localhost:8000/`
 
 ---
 
@@ -86,4 +89,12 @@ If you prefer to run the scripts directly without Docker:
 
 ## 🔑 Configuration
 
-Both apps require a **Google Gemini API Key**. You can obtain one for free at the Google AI Studio. Enter the key in the settings panel of the application once it is running.
+Both apps call Claude models through **AWS Bedrock** using server-side AWS credentials — there is no per-user API key to enter in the UI.
+
+Copy `.env.example` to `.env` and fill in:
+
+- `AWS_PROFILE` / `AWS_REGION` — AWS credentials with `bedrock:InvokeModel` access. When running via Docker Compose, `~/.aws` is mounted read-only into the container so the named profile resolves the same way it does on the host.
+- `CLAUDE_SONNET_MODEL_ID`, `CLAUDE_OPUS_MODEL_ID` — Bedrock model ids or application-inference-profile ARNs for the models you want selectable in the UI. Only the ones you set will appear in the model dropdown. Dropdown labels are resolved live: for an inference-profile ARN the app calls `bedrock:GetInferenceProfile` to find the underlying foundation model and labels the entry accordingly (e.g. "Claude Sonnet 5"), so the version shown always matches what the profile actually points at. This needs the `bedrock:GetInferenceProfile` IAM permission; without it the dropdown falls back to generic names like "Claude Sonnet".
+- `BEDROCK_GUARDRAIL_ID` / `BEDROCK_GUARDRAIL_VERSION` — only needed if your AWS account enforces a Bedrock guardrail on model invocation.
+
+`.env` is gitignored; never commit real AWS account details or ARNs.

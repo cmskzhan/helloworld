@@ -66,31 +66,25 @@ function setView(mode) {
     }
 }
 
-async function updateModelList() {
-    const apiKey = document.getElementById('api-key').value;
+async function loadModelList() {
     const select = document.getElementById('model-name');
-    if (!apiKey || apiKey.length < 10) return;
-
     try {
-        const res = await fetch('/api/models', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ api_key: apiKey })
-        });
+        const res = await fetch('/api/models');
         if (res.ok) {
             const data = await res.json();
-            const currentVal = select.value;
             select.innerHTML = '';
             data.models.forEach(m => {
                 const opt = document.createElement('option');
                 opt.value = m;
                 opt.textContent = m;
-                if (m === currentVal) opt.selected = true;
                 select.appendChild(opt);
             });
+        } else {
+            select.innerHTML = '<option value="">No models configured</option>';
         }
     } catch (e) {
         console.error("Failed to load models", e);
+        select.innerHTML = '<option value="">Failed to load models</option>';
     }
 }
 
@@ -121,8 +115,8 @@ async function downloadExport(format) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // ── API key → model list ──────────────────────────────────────────────────
-    document.getElementById('api-key').addEventListener('input', debounce(updateModelList, 1000));
+    // ── Load available models ─────────────────────────────────────────────────
+    loadModelList();
 
     // ── View-toggle buttons ───────────────────────────────────────────────────
     document.getElementById('view-split').addEventListener('click', () => setView('split'));
@@ -138,19 +132,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ── Generate button ───────────────────────────────────────────────────────
     document.getElementById('generate-btn').addEventListener('click', async () => {
-        const apiKey = document.getElementById('api-key').value;
         const jd = document.getElementById('jd').value;
         const focus = document.getElementById('focus').value;
         const modelName = document.getElementById('model-name').value;
         const useProfile = document.getElementById('use-profile') ? document.getElementById('use-profile').checked : false;
         const files = document.getElementById('cv-uploads').files;
 
-        if (!apiKey) return showToast("API Key is required", "error");
+        if (!modelName) return showToast("No model selected", "error");
         if (!jd) return showToast("Job description is required", "error");
         if (!useProfile && files.length === 0) return showToast("Provide at least one CV or enable saved profile", "error");
 
         const formData = new FormData();
-        formData.append('api_key', apiKey);
         formData.append('jd', jd);
         formData.append('focus', focus);
         formData.append('model_name', modelName);

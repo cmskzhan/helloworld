@@ -1,7 +1,9 @@
 fastapi
 uvicorn
 python-multipart
-google-genai
+anthropic[bedrock]
+boto3
+python-dotenv
 markdown
 python-docx
 pypdf

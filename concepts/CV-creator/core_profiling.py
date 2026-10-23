@@ -279,10 +279,11 @@ def merge_profiles(existing: dict, new_data: dict, source_file: str = "") -> dic
     return existing
 
 def extract_structured_data(cv_text: str, client, model_name: str) -> dict:
+    from claude_client import generate_text
+
     schema_json = json.dumps(PROFILE_SCHEMA, indent=2)
     prompt = EXTRACTION_PROMPT.format(schema=schema_json, cv_text=cv_text)
-    response = client.models.generate_content(model=model_name, contents=prompt, config={'response_mime_type': 'application/json'})
-    raw = response.text.strip()
+    raw = generate_text(client, model_name, prompt).strip()
     if raw.startswith("```"):
         raw = raw.split("\n", 1)[1]
         if raw.endswith("```"): raw = raw[: raw.rfind("```")]

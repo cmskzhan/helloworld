@@ -6,17 +6,26 @@ from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from google import genai
 import logging
 
+from claude_client import (
+    get_available_models,
+    resolve_model_id,
+    get_client,
+    generate_text,
+    classify_claude_error,
+)
 from core_profiling import (
-    load_profile, save_profile, delete_profile, get_profile_text, 
+    load_profile, save_profile, delete_profile, get_profile_text,
     merge_profiles, extract_text_from_bytes, extract_structured_data,
     DEDUPLICATION_PROMPT, TRAINING_DATA_DIR
 )
 from core_cv import create_pdf_bytes, create_docx_bytes
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Local AI CV Tailor & Profiling API")
@@ -29,43 +38,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class ModelRequest(BaseModel):
-    api_key: str
-
-class ProfileGenerateRequest(BaseModel):
-    jd: str
-    use_profile: bool
-    focus: str
-    api_key: str
-    model_name: str
-
 class MarkdownExportRequest(BaseModel):
     markdown: str
 
 class DeduplicateRequest(BaseModel):
-    api_key: str
     model_name: str
     profile: dict
 
-@app.post("/api/models")
-def get_models(req: ModelRequest):
-    if not req.api_key:
-        raise HTTPException(status_code=400, detail="API Key required")
-    try:
-        logger.info("Fetching models from Google GenAI API")
-        client = genai.Client(api_key=req.api_key)
-        models = client.models.list()
-        # Sort so pro/flash are first
-        dynamic = sorted([m.name for m in models], 
-                        key=lambda x: ("flash" in x.lower() or "pro" in x.lower()), 
-                        reverse=True)
-        if dynamic:
-            logger.info(f"Discovered {len(dynamic)} models")
-            return {"models": dynamic}
-        return {"models": ["gemini-1.5-pro", "gemini-1.5-flash", "gemini-2.0-flash-exp"]}
-    except Exception as e:
-        logger.error(f"Error fetching models: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+@app.get("/api/models")
+def get_models():
+    models = get_available_models()
+    if not models:
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "No Claude models configured on the server. Set at least one of "
+                "CLAUDE_SONNET_MODEL_ID, CLAUDE_OPUS_MODEL_ID in .env "
+                "(see .env.example)."
+            ),
+        )
+    return {"models": list(models.keys())}
 
 @app.get("/api/profile")
 def get_profile():
@@ -86,38 +78,45 @@ def get_profile_text_endpoint():
     return {"text": get_profile_text()}
 
 @app.post("/api/profile/scan")
-def scan_training_data(api_key: str = Form(...), model_name: str = Form(...)):
+def scan_training_data(model_name: str = Form(...)):
+    model_id = resolve_model_id(model_name)
+    if not model_id:
+        raise HTTPException(status_code=400, detail="Unknown model")
     if not TRAINING_DATA_DIR.exists():
         TRAINING_DATA_DIR.mkdir(parents=True, exist_ok=True)
     md_files = sorted(list(TRAINING_DATA_DIR.glob("*.md")))
     if not md_files:
         return {"scanned": 0, "message": "No markdown files found"}
-    
+
     try:
-        client = genai.Client(api_key=api_key)
+        client = get_client()
         profile = load_profile()
         for f in md_files:
             try:
                 with open(f, "r", encoding="utf-8") as file:
                     cv_text = file.read()
                 if not cv_text.strip(): continue
-                extracted = extract_structured_data(cv_text, client, model_name)
+                extracted = extract_structured_data(cv_text, client, model_id)
                 profile = merge_profiles(profile, extracted, source_file=f.name)
             except Exception as e:
-                logger.error(f"Error processing {f.name}: {e}")
+                logger.exception(f"Error processing {f.name} (model={model_id})")
         save_profile(profile)
         return {"scanned": len(md_files), "profile": profile}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception(f"/api/profile/scan failed (model={model_id})")
+        status_code, message = classify_claude_error(e)
+        raise HTTPException(status_code=status_code, detail=message)
 
 @app.post("/api/profile/extract")
 async def extract_upload(
-    api_key: str = Form(...), 
-    model_name: str = Form(...), 
+    model_name: str = Form(...),
     files: List[UploadFile] = File(...)
 ):
+    model_id = resolve_model_id(model_name)
+    if not model_id:
+        raise HTTPException(status_code=400, detail="Unknown model")
     try:
-        client = genai.Client(api_key=api_key)
+        client = get_client()
         profile = load_profile()
         for f in files:
             content = await f.read()
@@ -126,25 +125,25 @@ async def extract_upload(
             else:
                 cv_text = extract_text_from_bytes(content, f.filename)
             if not cv_text.strip(): continue
-            extracted = extract_structured_data(cv_text, client, model_name)
+            extracted = extract_structured_data(cv_text, client, model_id)
             profile = merge_profiles(profile, extracted, source_file=f.filename)
         save_profile(profile)
         return {"profile": profile}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception(f"/api/profile/extract failed (model={model_id})")
+        status_code, message = classify_claude_error(e)
+        raise HTTPException(status_code=status_code, detail=message)
 
 @app.post("/api/profile/deduplicate")
 def deduplicate_profile(req: DeduplicateRequest):
+    model_id = resolve_model_id(req.model_name)
+    if not model_id:
+        raise HTTPException(status_code=400, detail="Unknown model")
     try:
-        client = genai.Client(api_key=req.api_key)
+        client = get_client()
         profile_json = json.dumps(req.profile, indent=2, ensure_ascii=False)
         prompt = DEDUPLICATION_PROMPT.format(profile_json=profile_json)
-        response = client.models.generate_content(
-            model=req.model_name,
-            contents=prompt,
-            config={'response_mime_type': 'application/json'}
-        )
-        raw = response.text.strip()
+        raw = generate_text(client, model_id, prompt).strip()
         if raw.startswith("```"):
             raw = raw.split("\n", 1)[1]
             if raw.endswith("```"): raw = raw[: raw.rfind("```")]
@@ -156,17 +155,21 @@ def deduplicate_profile(req: DeduplicateRequest):
         deduped["metadata"]["last_updated"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
         return {"profile": deduped}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception(f"/api/profile/deduplicate failed (model={model_id})")
+        status_code, message = classify_claude_error(e)
+        raise HTTPException(status_code=status_code, detail=message)
 
 @app.post("/api/cv/generate")
 async def generate_cv(
     jd: str = Form(...),
     use_profile: bool = Form(...),
     focus: str = Form(...),
-    api_key: str = Form(...),
     model_name: str = Form(...),
     files: Optional[List[UploadFile]] = File(None)
 ):
+    model_id = resolve_model_id(model_name)
+    if not model_id:
+        raise HTTPException(status_code=400, detail="Unknown model")
     try:
         context_text = ""
         if use_profile:
@@ -211,11 +214,13 @@ async def generate_cv(
         - Do NOT use ### headers — use **Title** | Company pattern for job entries.
         - Omit empty sections entirely.
         """
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(model=model_name, contents=prompt)
-        return {"markdown": response.text}
+        client = get_client()
+        markdown = generate_text(client, model_id, prompt)
+        return {"markdown": markdown}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception(f"/api/cv/generate failed (model={model_name} -> {model_id})")
+        status_code, message = classify_claude_error(e)
+        raise HTTPException(status_code=status_code, detail=message)
 
 @app.post("/api/cv/pdf")
 def export_pdf(req: MarkdownExportRequest):
@@ -223,6 +228,7 @@ def export_pdf(req: MarkdownExportRequest):
         pdf_bytes = create_pdf_bytes(req.markdown)
         return Response(content=pdf_bytes, media_type="application/pdf")
     except Exception as e:
+        logger.exception("/api/cv/pdf failed")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/cv/docx")
@@ -231,6 +237,7 @@ def export_docx(req: MarkdownExportRequest):
         docx_bytes = create_docx_bytes(req.markdown)
         return Response(content=docx_bytes, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     except Exception as e:
+        logger.exception("/api/cv/docx failed")
         raise HTTPException(status_code=500, detail=str(e))
 
 # Serve static files as fallback - API takes precedence

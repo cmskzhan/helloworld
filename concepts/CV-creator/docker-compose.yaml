@@ -4,9 +4,12 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: cv-backend
+    env_file:
+      - .env
     volumes:
       - ./user_profile.json:/app/user_profile.json
       - ./trainingData:/app/trainingData
+      - ~/.aws:/root/.aws:ro
     restart: unless-stopped
     networks:
       - cv-net
