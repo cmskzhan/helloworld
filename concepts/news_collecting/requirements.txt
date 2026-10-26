@@ -1,0 +1,4 @@
+feedparser
+telethon
+google-genai
+mega.py
