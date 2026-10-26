@@ -23,7 +23,9 @@ jobs:
           cache-dependency-path: concepts/news_collecting/requirements.txt
 
       - name: Install dependencies
-        run: python -m pip install -r concepts/news_collecting/requirements.txt
+        run: |
+          python -m pip install -r concepts/news_collecting/requirements.txt
+          python -m pip install --no-deps mega.py
 
       - name: Run news_channel.py
         working-directory: concepts/news_collecting
