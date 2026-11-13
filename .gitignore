@@ -22,3 +22,5 @@ concepts/CV-creator/__pycache__/*
 # remotion
 learnAI/remotion/out/*
 learnAI/remotion/package-lock.json
+learnAI/remotion/build/*
+.claude/last30days.env
